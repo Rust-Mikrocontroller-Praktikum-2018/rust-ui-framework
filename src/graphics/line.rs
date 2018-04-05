@@ -1,11 +1,12 @@
-use stm32f7::lcd::{Layer, Framebuffer, Color};
+use stm32f7::lcd::{Color, Framebuffer, Layer};
+use graphics::point::Point;
 
-pub fn draw_line<T: Framebuffer> (lcd: &mut Layer<T>, x0: usize, y0: usize, x1: usize, y1: usize, color: Color) {
-    let x0: i32 = x0 as i32;
-    let x1: i32 = x1 as i32;
-    let y0: i32 = y0 as i32;
-    let y1: i32 = y1 as i32;
-    
+pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: Point, p1: Point, color: Color) {
+    let x0: i32 = p0.x as i32;
+    let x1: i32 = p1.x as i32;
+    let y0: i32 = p0.y as i32;
+    let y1: i32 = p1.y as i32;
+
     let x_diff = (x0 - x1).abs();
     let y_diff = (y0 - y1).abs();
 

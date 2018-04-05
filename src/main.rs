@@ -200,7 +200,15 @@ fn main(hw: board::Hardware) -> ! {
                 // poll for new touch data
                 for touch in &touch::touches(&mut i2c_3).unwrap() {
                     let lcd = audio_writer.layer();
-                    graphics::line::draw_line(lcd, last_x, last_y, touch.x as usize, touch.y as usize, color);
+                    let p0 = graphics::point::Point{
+                        x: last_x,
+                        y: last_y,
+                    };
+                    let p1 = graphics::point::Point{
+                        x: touch.x as usize,
+                        y: touch.y as usize,
+                    };
+                    graphics::line::draw_line(lcd, p0, p1, color);
                     last_x = touch.x as usize;
                     last_y = touch.y as usize;
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
