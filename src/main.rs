@@ -26,6 +26,8 @@ use smoltcp::wire::{IpEndpoint, IpAddress};
 use smoltcp::time::Instant;
 use alloc::Vec;
 
+mod graphics;
+
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
     extern "C" {
@@ -218,6 +220,9 @@ fn main(hw: board::Hardware) -> ! {
                 lcd.set_background_color(lcd::Color::from_hex(new_color));
             });
 
+            let mut last_x = 0;
+            let mut last_y = 0;
+            let color = stm32f7::lcd::Color::rgb(255, 255, 255);
             loop {
                 let ticks = system_clock::ticks();
 
@@ -232,9 +237,11 @@ fn main(hw: board::Hardware) -> ! {
 
                 // poll for new touch data
                 for touch in &touch::touches(&mut i2c_3).unwrap() {
-                    audio_writer
-                        .layer()
-                        .print_point_at(touch.x as usize, touch.y as usize);
+                    let lcd = audio_writer.layer();
+                    graphics::line::draw_line(lcd, last_x, last_y, touch.x as usize, touch.y as usize, color);
+                    last_x = touch.x as usize;
+                    last_y = touch.y as usize;
+                    // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
                 }
 
 
