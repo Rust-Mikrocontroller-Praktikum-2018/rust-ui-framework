@@ -208,7 +208,7 @@ fn main(hw: board::Hardware) -> ! {
                         x: touch.x as usize,
                         y: touch.y as usize,
                     };
-                    graphics::line::draw_line(lcd, p0, p1, color);
+                    graphics::line::draw_line(lcd, &p0, &p1, color);
                     last_x = touch.x as usize;
                     last_y = touch.y as usize;
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);

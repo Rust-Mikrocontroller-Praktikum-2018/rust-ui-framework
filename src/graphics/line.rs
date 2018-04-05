@@ -1,7 +1,7 @@
 use stm32f7::lcd::{Color, Framebuffer, Layer};
 use graphics::point::Point;
 
-pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: Point, p1: Point, color: Color) {
+pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, color: Color) {
     let x0: i32 = p0.x as i32;
     let x1: i32 = p1.x as i32;
     let y0: i32 = p0.y as i32;
