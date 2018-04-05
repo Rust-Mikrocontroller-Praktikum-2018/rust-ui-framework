@@ -6,7 +6,6 @@
 #![no_std]
 #![no_main]
 
-#[macro_use]
 extern crate stm32f7_discovery as stm32f7;
 
 // initialization routines for .data and .bss
@@ -18,13 +17,7 @@ extern crate r0;
 extern crate smoltcp;
 
 // hardware register structs with accessor methods
-use stm32f7::{audio, board, embedded, ethernet, lcd, sdram, system_clock, touch, i2c};
-use stm32f7::ethernet::IP_ADDR;
-use smoltcp::socket::{Socket, SocketSet, TcpSocket, TcpSocketBuffer};
-use smoltcp::socket::{UdpSocket, UdpPacketMetadata, UdpSocketBuffer};
-use smoltcp::wire::{IpEndpoint, IpAddress};
-use smoltcp::time::Instant;
-use alloc::Vec;
+use stm32f7::{audio, board, embedded, lcd, sdram, system_clock, touch, i2c};
 
 mod graphics;
 
@@ -58,7 +51,6 @@ pub unsafe extern "C" fn reset() -> ! {
 #[inline(never)] //             reset() before the FPU is initialized
 fn main(hw: board::Hardware) -> ! {
     use embedded::interfaces::gpio::{self, Gpio};
-    use alloc::Vec;
 
     let x = vec![1, 2, 3, 4, 5];
     assert_eq!(x.len(), 5);
@@ -84,8 +76,6 @@ fn main(hw: board::Hardware) -> ! {
         i2c_3,
         sai_2,
         syscfg,
-        ethernet_mac,
-        ethernet_dma,
         nvic,
         exti,
         ..
@@ -161,42 +151,13 @@ fn main(hw: board::Hardware) -> ! {
     audio::init_sai_2(sai_2, rcc);
     assert!(audio::init_wm8994(&mut i2c_3).is_ok());
 
-    // ethernet
-    let mut ethernet_interface = ethernet::EthernetDevice::new(
-        Default::default(),
-        Default::default(),
-        rcc,
-        syscfg,
-        &mut gpio,
-        ethernet_mac,
-        ethernet_dma,
-    ).map(|device| device.into_interface());
-    if let Err(e) = ethernet_interface {
-        println!("ethernet init failed: {:?}", e);
-    };
-
-    let mut sockets = SocketSet::new(Vec::new());
-    let endpoint = IpEndpoint::new(IpAddress::Ipv4(IP_ADDR), 15);
-
-    let udp_rx_buffer = UdpSocketBuffer::new(vec![UdpPacketMetadata::EMPTY; 3], vec![0u8; 256]);
-    let udp_tx_buffer = UdpSocketBuffer::new(vec![UdpPacketMetadata::EMPTY; 1], vec![0u8; 128]);
-    let mut example_udp_socket = UdpSocket::new(udp_rx_buffer, udp_tx_buffer);
-    example_udp_socket.bind(endpoint).unwrap();
-    sockets.add(example_udp_socket);
-
-    let tcp_rx_buffer = TcpSocketBuffer::new(vec![0; ethernet::MTU]);
-    let tcp_tx_buffer = TcpSocketBuffer::new(vec![0; ethernet::MTU]);
-    let mut example_tcp_socket = TcpSocket::new(tcp_rx_buffer, tcp_tx_buffer);
-    example_tcp_socket.listen(endpoint).unwrap();
-    sockets.add(example_tcp_socket);
-
     touch::check_family_id(&mut i2c_3).unwrap();
 
     let mut audio_writer = layer_1.audio_writer();
     let mut last_led_toggle = system_clock::ticks();
 
-    use stm32f7::board::embedded::interfaces::gpio::Port;
     use stm32f7::board::embedded::components::gpio::stm32f7::Pin;
+    use stm32f7::board::embedded::interfaces::gpio::Port;
     use stm32f7::exti::{EdgeDetection, Exti, ExtiLine};
 
     let mut exti = Exti::new(exti);
@@ -206,19 +167,21 @@ fn main(hw: board::Hardware) -> ! {
         syscfg,
     ).unwrap();
 
-    use stm32f7::interrupts::{scope, Priority};
     use stm32f7::interrupts::interrupt_request::InterruptRequest;
+    use stm32f7::interrupts::{scope, Priority};
 
     scope(
         nvic,
         |_| {},
         |interrupt_table| {
-            let _ = interrupt_table.register(InterruptRequest::Exti10to15, Priority::P1, move || {
-                exti_handle.clear_pending_state();
-                // choose a new background color
-                let new_color = ((system_clock::ticks() as u32).wrapping_mul(19801)) % 0x1000000;
-                lcd.set_background_color(lcd::Color::from_hex(new_color));
-            });
+            let _ =
+                interrupt_table.register(InterruptRequest::Exti10to15, Priority::P1, move || {
+                    exti_handle.clear_pending_state();
+                    // choose a new background color
+                    let new_color =
+                        ((system_clock::ticks() as u32).wrapping_mul(19801)) % 0x1000000;
+                    lcd.set_background_color(lcd::Color::from_hex(new_color));
+                });
 
             let mut last_x = 0;
             let mut last_y = 0;
@@ -234,7 +197,6 @@ fn main(hw: board::Hardware) -> ! {
                     last_led_toggle = ticks;
                 }
 
-
                 // poll for new touch data
                 for touch in &touch::touches(&mut i2c_3).unwrap() {
                     let lcd = audio_writer.layer();
@@ -243,66 +205,7 @@ fn main(hw: board::Hardware) -> ! {
                     last_y = touch.y as usize;
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
                 }
-
-
-                // handle new ethernet packets
-                if let Ok(ref mut eth) = ethernet_interface {
-                    match eth.poll(&mut sockets, Instant::from_millis(system_clock::ticks() as i64)) {
-                        Err(::smoltcp::Error::Exhausted) => continue,
-                        Err(::smoltcp::Error::Unrecognized) => {},
-                        Err(e) => println!("Network error: {:?}", e),
-                        Ok(socket_changed) => if socket_changed {
-                            for mut socket in sockets.iter_mut() {
-                                poll_socket(&mut socket).expect("socket poll failed");
-                            }
-                        },
-                    }
-                }
             }
         },
     )
-}
-
-fn poll_socket(socket: &mut Socket) -> Result<(), smoltcp::Error> {
-    match socket {
-        &mut Socket::Udp(ref mut socket) => match socket.endpoint().port {
-            15 => loop {
-                let reply;
-                match socket.recv() {
-                    Ok((data, remote_endpoint)) => {
-                        let mut data = Vec::from(data);
-                        let len = data.len()-1;
-                        data[..len].reverse();
-                        reply = (data, remote_endpoint);
-                    },
-                    Err(smoltcp::Error::Exhausted) => break,
-                    Err(err) => return Err(err),
-                }
-                socket.send_slice(&reply.0, reply.1)?;
-            }
-            _ => {}
-        }
-        &mut Socket::Tcp(ref mut socket) => match socket.local_endpoint().port {
-            15 => {
-                if !socket.may_recv() { return Ok(()); }
-                let reply = socket.recv(|data| {
-                    if data.len() > 0 {
-                        let mut reply = Vec::from("tcp: ");
-                        let start_index = reply.len();
-                        reply.extend_from_slice(data);
-                        reply[start_index..(start_index + data.len() - 1)].reverse();
-                        (data.len(), Some(reply))
-                    } else {
-                        (data.len(), None)
-                    }
-                })?;
-                if let Some(reply) = reply {
-                    assert_eq!(socket.send_slice(&reply)?, reply.len());
-                }
-            }
-            _ => {}
-        }
-        _ => {}
-    }
-    Ok(())
 }
