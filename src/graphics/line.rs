@@ -10,6 +10,10 @@ pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, col
     let x_diff = (x0 - x1).abs();
     let y_diff = (y0 - y1).abs();
 
+    if p0.x == p1.x && p0.y == p1.y {
+        lcd.print_point_color_at(p0.x, p1.x, color);
+    }
+
     if x_diff > y_diff {
         for x in x0..=x1 {
             let x = x - x0;
