@@ -2,3 +2,4 @@ target
 blinking_led/target
 *.rs.bk
 .gdbinit
+.idea/

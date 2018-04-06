@@ -139,7 +139,7 @@ fn main(hw: board::Hardware) -> ! {
 
     layer_1.clear();
     layer_2.clear();
-    lcd::init_stdout(layer_2);
+    //lcd::init_stdout(layer_2);
 
     // i2c
     i2c::init_pins_and_clocks(rcc, &mut gpio);
@@ -155,6 +155,7 @@ fn main(hw: board::Hardware) -> ! {
     touch::check_family_id(&mut i2c_3).unwrap();
 
     let mut audio_writer = layer_1.audio_writer();
+    let mut text_writer = layer_2.text_writer();
     let mut last_led_toggle = system_clock::ticks();
 
     use stm32f7::board::embedded::components::gpio::stm32f7::Pin;
@@ -206,6 +207,9 @@ fn main(hw: board::Hardware) -> ! {
                     } else if number_of_touches as i32 == 0 {
                         duration_of_touch = 0;
                     } 
+                //println!("test");
+                text_writer.print_str_at(100, 100, "testString");
+                text_writer.print_str_at(100, 150, "testString2\ntest");
 
                 // poll for new touch data
                 for touch in &touch::touches(&mut i2c_3).unwrap() {
