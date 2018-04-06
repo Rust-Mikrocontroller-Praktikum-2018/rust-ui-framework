@@ -6,6 +6,7 @@
 #![no_std]
 #![no_main]
 
+#[macro_use]
 extern crate stm32f7_discovery as stm32f7;
 
 // initialization routines for .data and .bss
@@ -186,6 +187,7 @@ fn main(hw: board::Hardware) -> ! {
             let mut last_x = 0;
             let mut last_y = 0;
             let color = stm32f7::lcd::Color::rgb(255, 255, 255);
+            let mut duration_of_touch = 0;
             loop {
                 let ticks = system_clock::ticks();
 
@@ -196,6 +198,14 @@ fn main(hw: board::Hardware) -> ! {
                     led.set(!led_current);
                     last_led_toggle = ticks;
                 }
+
+                let number_of_touches = touch::touches(&mut i2c_3).unwrap().len();
+                    if number_of_touches as i32 == 1{
+                        duration_of_touch += 1;
+                        println!("duration of touch = {}", duration_of_touch);
+                    } else if number_of_touches as i32 == 0 {
+                        duration_of_touch = 0;
+                    } 
 
                 // poll for new touch data
                 for touch in &touch::touches(&mut i2c_3).unwrap() {
@@ -213,12 +223,12 @@ fn main(hw: board::Hardware) -> ! {
                     last_y = touch.y as usize; */
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
                 }
-                let lcd = audio_writer.layer();
+                /* let lcd = audio_writer.layer();
                 let m = graphics::point::Point{
                     x: 239,
                     y: 135,
                 };
-                 graphics::circle::drawcircle(lcd, &m, 200, color);
+                 graphics::circle::draw_filled_circle(lcd, &m, 200, color); */
             }
             
         },
