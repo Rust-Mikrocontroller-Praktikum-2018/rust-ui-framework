@@ -198,6 +198,7 @@ pub fn init(ltdc: &'static mut Ltdc, rcc: &mut Rcc, gpio: &mut Gpio) -> Lcd {
         backlight_enable: backlight_enable,
         layer_1_in_use: false,
         layer_2_in_use: false,
+        layer_1b_in_use: false,
     }
 }
 

@@ -14,7 +14,7 @@ pub fn update(m: Model, touches: &ArrayVec<[Touch; 5]>) -> Model {
     };
 
     let (new_first_contact,new_second_contact) = match (m.cursor.first_contact, current_touch){
-        (Some(p), None) => (None, None),
+        (Some(_p), None) => (None, None),
         (Some(p), Some(q)) => (Some(p), Some(q)),
         (None, Some(p)) => (Some(p), Some(p)),
         (None, None) => (None, None),

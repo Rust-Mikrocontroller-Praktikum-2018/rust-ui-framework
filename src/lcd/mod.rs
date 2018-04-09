@@ -24,8 +24,9 @@ const LAYER_2_OCTETS_PER_PIXEL: usize = 2;
 const LAYER_2_LENGTH: usize = HEIGHT * WIDTH * LAYER_2_OCTETS_PER_PIXEL;
 
 const SDRAM_START: usize = 0xC000_0000;
-const LAYER_1_START: usize = SDRAM_START;
+pub const LAYER_1_START: usize = SDRAM_START;
 const LAYER_2_START: usize = SDRAM_START + LAYER_1_LENGTH;
+pub const LAYER_1B_START: usize = LAYER_2_START + LAYER_2_LENGTH;
 
 static TTF: &[u8] = include_bytes!("../../RobotoMono-Bold.ttf");
 
@@ -34,10 +35,22 @@ pub struct Lcd {
     display_enable: OutputPin,
     backlight_enable: OutputPin,
     layer_1_in_use: bool,
+    layer_1b_in_use: bool,
     layer_2_in_use: bool,
 }
 
 impl Lcd {
+    pub fn set_framebuffer(&mut self, active_layer: bool){
+        let layer_ptr = if active_layer {
+            LAYER_1B_START
+        }else {
+            LAYER_1_START
+        };
+        // swap view buffers
+        self.controller.l1cfbar.update(|r| r.set_cfbadd(layer_ptr as u32));
+        self.controller.srcr.update(|r| r.set_imr(true)); // IMMEDIATE_RELOAD
+    }
+
     pub fn set_background_color(&mut self, color: Color) {
         self.controller.bccr.update(|r| r.set_bc(color.to_rgb()));
     }
@@ -48,6 +61,16 @@ impl Lcd {
         } else {
             Some(Layer {
                 framebuffer: FramebufferArgb8888::new(LAYER_1_START),
+            })
+        }
+    }
+
+    pub fn layer_1b(&mut self) -> Option<Layer<FramebufferArgb8888>> {
+        if self.layer_1b_in_use {
+            None
+        } else {
+            Some(Layer {
+                framebuffer: FramebufferArgb8888::new(LAYER_1B_START),
             })
         }
     }

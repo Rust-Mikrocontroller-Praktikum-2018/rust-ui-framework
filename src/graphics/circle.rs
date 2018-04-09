@@ -1,7 +1,8 @@
 use stm32f7::lcd::{Color, Framebuffer, Layer};
 use graphics::point::Point;
+use graphics::view::BoundingBox;
 
-pub fn draw_circle<T: Framebuffer>(lcd: &mut Layer<T>,m: &Point, r : i32, color: Color) {
+pub fn draw_circle<T: Framebuffer>(lcd: &mut Layer<T>,m: &Point, r : i32, color: Color) -> BoundingBox {
     let x0 = m.x as i32;
     let y0 = m.y as i32;
     let mut x: i32 = r-1;
@@ -37,6 +38,12 @@ pub fn draw_circle<T: Framebuffer>(lcd: &mut Layer<T>,m: &Point, r : i32, color:
         }
     }
 
+    BoundingBox {
+        min_x: m.x as i32 - r,
+        min_y: m.y as i32 - r,
+        max_x: m.x as i32 + r,
+        max_y: m.y as i32 + r,
+    }
 }
 
 pub fn draw_filled_circle<T: Framebuffer>(lcd: &mut Layer<T>,m: &Point, r : i32, color: Color) {

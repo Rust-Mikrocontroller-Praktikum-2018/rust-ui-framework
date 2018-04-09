@@ -6,7 +6,7 @@
 #![no_std]
 #![no_main]
 
-#[macro_use]
+//#[macro_use]
 extern crate stm32f7_discovery as stm32f7;
 
 // initialization routines for .data and .bss
@@ -137,9 +137,11 @@ fn main(hw: board::Hardware) -> ! {
     let mut lcd = lcd::init(ltdc, rcc, &mut gpio);
     let mut layer_1 = lcd.layer_1().unwrap();
     let mut layer_2 = lcd.layer_2().unwrap();
+    let mut layer_1b = lcd.layer_1b().unwrap();
 
     layer_1.clear();
     layer_2.clear();
+    layer_1b.clear();
     //lcd::init_stdout(layer_2);
 
     // i2c
@@ -155,9 +157,9 @@ fn main(hw: board::Hardware) -> ! {
 
     touch::check_family_id(&mut i2c_3).unwrap();
 
-    let mut audio_writer = layer_1.audio_writer();
+    //let mut audio_writer = layer_1.audio_writer();
     let mut text_writer = layer_2.text_writer();
-    let mut last_led_toggle = system_clock::ticks();
+    //let mut last_led_toggle = system_clock::ticks();
 
     use stm32f7::board::embedded::components::gpio::stm32f7::Pin;
     use stm32f7::board::embedded::interfaces::gpio::Port;
@@ -181,27 +183,28 @@ fn main(hw: board::Hardware) -> ! {
                 interrupt_table.register(InterruptRequest::Exti10to15, Priority::P1, move || {
                     exti_handle.clear_pending_state();
                     // choose a new background color
-                    let new_color =
-                        ((system_clock::ticks() as u32).wrapping_mul(19801)) % 0x1000000;
-                    lcd.set_background_color(lcd::Color::from_hex(new_color));
+                    //let new_color =
+                    //    ((system_clock::ticks() as u32).wrapping_mul(19801)) % 0x1000000;
+                    //lcd.set_background_color(lcd::Color::from_hex(new_color));
                 });
 
             /* let mut last_x = 0;
             let mut last_y = 0; */
-            let color = stm32f7::lcd::Color::rgb(255, 255, 255);
-            let mut duration_of_touch = 0;
+            //let color = stm32f7::lcd::Color::rgb(255, 255, 255);
+            //let mut duration_of_touch = 0;
             let mut cursor_model = graphics::model::CursorModel{first_contact: None, second_contact: None};
             let mut model = graphics::model::Model{p: graphics::point::Point{x:100, y:50}, r:20, cursor: cursor_model};
+            let mut myview = graphics::view::View::new();
             loop {
-                let ticks = system_clock::ticks();
+                //let ticks = system_clock::ticks();
 
                 // every 0.5 seconds
-                if ticks - last_led_toggle >= 500 {
-                    // toggle the led
-                    let led_current = led.get();
-                    led.set(!led_current);
-                    last_led_toggle = ticks;
-                }
+//                if ticks - last_led_toggle >= 500 {
+//                    // toggle the led
+//                    let led_current = led.get();
+//                    led.set(!led_current);
+//                    last_led_toggle = ticks;
+//                }
 
                 /* let number_of_touches = touch::touches(&mut i2c_3).unwrap().len();
                     if number_of_touches as i32 == 1{
@@ -233,8 +236,9 @@ fn main(hw: board::Hardware) -> ! {
                 } */
 
                 model = graphics::update::update(model, &touch::touches(&mut i2c_3).unwrap());
-                let lcd = audio_writer.layer();
-                 graphics::view::view(&model, lcd);
+                let active_layer = myview.view(&model, &mut layer_1, &mut layer_1b);
+
+                lcd.set_framebuffer(active_layer);
             }
             
         },
