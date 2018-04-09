@@ -13,13 +13,14 @@ extern crate stm32f7_discovery as stm32f7;
 
 #[macro_use]
 extern crate alloc;
+extern crate arrayvec;
 extern crate compiler_builtins;
 extern crate r0;
 extern crate smoltcp;
-extern crate arrayvec;
 
 // hardware register structs with accessor methods
 use stm32f7::{audio, board, embedded, lcd, sdram, system_clock, touch, i2c};
+use graphics::ui_component::UIComponent;
 
 mod graphics;
 
@@ -158,7 +159,7 @@ fn main(hw: board::Hardware) -> ! {
     touch::check_family_id(&mut i2c_3).unwrap();
 
     //let mut audio_writer = layer_1.audio_writer();
-    let mut text_writer = layer_2.text_writer();
+    // let mut text_writer = layer_2.text_writer();
     //let mut last_led_toggle = system_clock::ticks();
 
     use stm32f7::board::embedded::components::gpio::stm32f7::Pin;
@@ -190,21 +191,45 @@ fn main(hw: board::Hardware) -> ! {
 
             /* let mut last_x = 0;
             let mut last_y = 0; */
-            //let color = stm32f7::lcd::Color::rgb(255, 255, 255);
+            let color = stm32f7::lcd::Color::rgb(100, 100, 100);
             //let mut duration_of_touch = 0;
-            let mut cursor_model = graphics::model::CursorModel{first_contact: None, second_contact: None, last_contact: None};
-            let mut model = graphics::model::Model{p: graphics::point::Point{x:100, y:50}, r:20, cursor: cursor_model};
+            let mut cursor_model = graphics::model::CursorModel {
+                first_contact: None,
+                second_contact: None,
+                last_contact: None,
+            };
+            let mut model = graphics::model::Model {
+                p: graphics::point::Point { x: 100, y: 50 },
+                r: 20,
+                cursor: cursor_model,
+            };
             let mut myview = graphics::view::View::new();
+
+            let upper_left = graphics::point::Point { x: 10, y: 10 };
+            let lower_right = graphics::point::Point { x: 70, y: 40 };
+            let text = "I am a button.";
+            let button = graphics::button::Button {
+                    upper_left: upper_left,
+                    lower_right: lower_right,
+                    text: text,
+                };
+                button.paint(&mut layer_1, &mut layer_2, color);
+                button.paint(&mut layer_1b, &mut layer_2, color);
+
+                // if button.click(cursor_model.first_contact) {
+                    
+                // }
+
             loop {
                 //let ticks = system_clock::ticks();
 
                 // every 0.5 seconds
-//                if ticks - last_led_toggle >= 500 {
-//                    // toggle the led
-//                    let led_current = led.get();
-//                    led.set(!led_current);
-//                    last_led_toggle = ticks;
-//                }
+                //                if ticks - last_led_toggle >= 500 {
+                //                    // toggle the led
+                //                    let led_current = led.get();
+                //                    led.set(!led_current);
+                //                    last_led_toggle = ticks;
+                //                }
 
                 /* let number_of_touches = touch::touches(&mut i2c_3).unwrap().len();
                     if number_of_touches as i32 == 1{
@@ -215,8 +240,8 @@ fn main(hw: board::Hardware) -> ! {
                     }  */
 
                 //println!("test");
-                /* text_writer.print_str_at(100, 100, "testString");
-                text_writer.print_str_at(100, 150, "testString2\ntest"); */
+                // text_writer.print_str_at(100, 100, "testString");
+                // text_writer.print_str_at(100, 150, "testString2\ntest");
 
                 // poll for new touch data
                 /* for touch in &touch::touches(&mut i2c_3).unwrap() {
@@ -240,7 +265,6 @@ fn main(hw: board::Hardware) -> ! {
 
                 lcd.set_framebuffer(active_layer);
             }
-            
         },
     )
 }
