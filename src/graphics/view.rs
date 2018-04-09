@@ -61,8 +61,8 @@ impl View {
 
         match m.cursor.last_contact {
             Some(ref p) => bbs_inactive.push(circle::draw_circle(layer_inactive, &p, m.r, Color::from_hex(0x00FF00))),
-            None => (),
-        }
+            None => None,
+        };
 
         self.active_layer = !self.active_layer;
 

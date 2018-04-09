@@ -17,7 +17,7 @@ pub fn update(m: Model, touches: &ArrayVec<[Touch; 5]>) -> Model {
     match (m.cursor.first_contact, m.cursor.second_contact, current_touch){
         (Some(p), None, None) => (None, None, Some(p)),
         (Some(p), Some(q), None) => (None, None, Some(q)),
-        (None, None, None) => (None, None, None),
+        (None, None, None) => (None, None, m.cursor.last_contact),
         (None, Some(p), None) => (None, None, None), //this case shouldn't occur
         (Some(p), None, Some(q)) => (Some(p), Some(q), None),
         (Some(p), Some(q), Some(r)) => (Some(p), Some(r), None),
