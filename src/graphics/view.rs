@@ -10,6 +10,29 @@ pub struct BoundingBox {
     pub max_y: i32,
 }
 
+impl BoundingBox {
+    pub fn new(mut min_x: i32, mut min_y: i32, mut max_x: i32, mut max_y: i32) -> BoundingBox {
+        if min_x < 0 {
+            min_x = 0;
+        }
+        if min_y < 0 {
+            min_y = 0;
+        }
+        if max_x >= 480 {
+            max_x = 479;
+        }
+        if max_y >= 272 {
+            max_y = 271;
+        }
+        BoundingBox{
+            min_x,
+            min_y,
+            max_x,
+            max_y
+        }
+    }
+}
+
 pub struct View{
     bbs1: ArrayVec<[BoundingBox; 3]>,
     bbs1b: ArrayVec<[BoundingBox; 3]>,

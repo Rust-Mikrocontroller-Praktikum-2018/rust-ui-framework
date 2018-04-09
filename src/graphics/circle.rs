@@ -37,13 +37,11 @@ pub fn draw_circle<T: Framebuffer>(lcd: &mut Layer<T>,m: &Point, r : i32, color:
             }
         }
     }
-
-    BoundingBox {
-        min_x: m.x as i32 - r,
-        min_y: m.y as i32 - r,
-        max_x: m.x as i32 + r,
-        max_y: m.y as i32 + r,
-    }
+    let min_x= m.x as i32 - r;
+    let min_y= m.y as i32 - r;
+    let max_x= m.x as i32 + r;
+    let max_y= m.y as i32 + r;
+    BoundingBox::new(min_x, min_y, max_x, max_y)
 }
 
 pub fn draw_filled_circle<T: Framebuffer>(lcd: &mut Layer<T>,m: &Point, r : i32, color: Color) {
