@@ -11,8 +11,8 @@ pub struct BoundingBox {
 }
 
 pub struct View{
-    bbs1: ArrayVec<[BoundingBox; 2]>,
-    bbs1b: ArrayVec<[BoundingBox; 2]>,
+    bbs1: ArrayVec<[BoundingBox; 3]>,
+    bbs1b: ArrayVec<[BoundingBox; 3]>,
     active_layer: bool,
 }
 
@@ -58,6 +58,11 @@ impl View {
             Some(ref p) => bbs_inactive.push(circle::draw_circle(layer_inactive, &p, 10, Color::from_hex(0xFF0000))),
             None => None,
         };
+
+        match m.cursor.last_contact {
+            Some(ref p) => bbs_inactive.push(circle::draw_circle(layer_inactive, &p, m.r, Color::from_hex(0x00FF00))),
+            None => (),
+        }
 
         self.active_layer = !self.active_layer;
 
