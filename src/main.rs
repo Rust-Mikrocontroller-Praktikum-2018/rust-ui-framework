@@ -6,6 +6,7 @@
 #![no_std]
 #![no_main]
 
+#[macro_use]
 extern crate stm32f7_discovery as stm32f7;
 
 // initialization routines for .data and .bss
@@ -15,6 +16,7 @@ extern crate alloc;
 extern crate compiler_builtins;
 extern crate r0;
 extern crate smoltcp;
+extern crate arrayvec;
 
 // hardware register structs with accessor methods
 use stm32f7::{audio, board, embedded, lcd, sdram, system_clock, touch, i2c};
@@ -138,7 +140,7 @@ fn main(hw: board::Hardware) -> ! {
 
     layer_1.clear();
     layer_2.clear();
-    lcd::init_stdout(layer_2);
+    //lcd::init_stdout(layer_2);
 
     // i2c
     i2c::init_pins_and_clocks(rcc, &mut gpio);
@@ -154,6 +156,7 @@ fn main(hw: board::Hardware) -> ! {
     touch::check_family_id(&mut i2c_3).unwrap();
 
     let mut audio_writer = layer_1.audio_writer();
+    let mut text_writer = layer_2.text_writer();
     let mut last_led_toggle = system_clock::ticks();
 
     use stm32f7::board::embedded::components::gpio::stm32f7::Pin;
@@ -183,9 +186,12 @@ fn main(hw: board::Hardware) -> ! {
                     lcd.set_background_color(lcd::Color::from_hex(new_color));
                 });
 
-            let mut last_x = 0;
-            let mut last_y = 0;
+            /* let mut last_x = 0;
+            let mut last_y = 0; */
             let color = stm32f7::lcd::Color::rgb(255, 255, 255);
+            let mut duration_of_touch = 0;
+            let mut cursor_model = graphics::model::CursorModel{first_contact: None, second_contact: None};
+            let mut model = graphics::model::Model{p: graphics::point::Point{x:100, y:50}, r:20, cursor: cursor_model};
             loop {
                 let ticks = system_clock::ticks();
 
@@ -197,12 +203,22 @@ fn main(hw: board::Hardware) -> ! {
                     last_led_toggle = ticks;
                 }
 
-                let mut v = vec![];
+                /* let number_of_touches = touch::touches(&mut i2c_3).unwrap().len();
+                    if number_of_touches as i32 == 1{
+                        duration_of_touch += 1;
+                        println!("duration of touch = {}", duration_of_touch);
+                    } else if number_of_touches as i32 == 0 {
+                        duration_of_touch = 0;
+                    }  */
+
+                //println!("test");
+                /* text_writer.print_str_at(100, 100, "testString");
+                text_writer.print_str_at(100, 150, "testString2\ntest"); */
+
                 // poll for new touch data
-                for touch in &touch::touches(&mut i2c_3).unwrap() {
-                    /*
+                /* for touch in &touch::touches(&mut i2c_3).unwrap() {
                     let lcd = audio_writer.layer();
-                    let p0 = graphics::point::Point{
+                    /* let p0 = graphics::point::Point{
                         x: last_x,
                         y: last_y,
                     };
@@ -212,18 +228,15 @@ fn main(hw: board::Hardware) -> ! {
                     };
                     graphics::line::draw_line(lcd, &p0, &p1, color);
                     last_x = touch.x as usize;
-                    last_y = touch.y as usize;
-                    */
+                    last_y = touch.y as usize; */
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
-                    let p = graphics::point::Point {
-                        x: touch.x as usize,
-                        y: touch.y as usize,
-                    };
-                    v.push(p);
-                }
+                } */
+
+                model = graphics::update::update(model, &touch::touches(&mut i2c_3).unwrap());
                 let lcd = audio_writer.layer();
-                graphics::polygon::draw_polygon(lcd, &v, color);
+                 graphics::view::view(&model, lcd);
             }
+            
         },
     )
 }

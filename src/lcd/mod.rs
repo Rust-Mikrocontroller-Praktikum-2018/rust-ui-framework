@@ -294,6 +294,12 @@ impl<'a, T: Framebuffer> TextWriter<'a, T> {
         *x_pos += width;
         Ok(())
     }
+
+    pub fn print_str_at(&mut self, x: usize, y: usize, s: &str){
+        self.x_pos = x;
+        self.y_pos = y;
+        self.write_str_no_newlines(s);
+    }
 }
 
 impl<'a, T: Framebuffer> fmt::Write for TextWriter<'a, T> {
