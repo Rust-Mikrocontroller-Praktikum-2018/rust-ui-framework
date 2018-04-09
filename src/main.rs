@@ -197,8 +197,10 @@ fn main(hw: board::Hardware) -> ! {
                     last_led_toggle = ticks;
                 }
 
+                let mut v = vec![];
                 // poll for new touch data
                 for touch in &touch::touches(&mut i2c_3).unwrap() {
+                    /*
                     let lcd = audio_writer.layer();
                     let p0 = graphics::point::Point{
                         x: last_x,
@@ -211,8 +213,16 @@ fn main(hw: board::Hardware) -> ! {
                     graphics::line::draw_line(lcd, &p0, &p1, color);
                     last_x = touch.x as usize;
                     last_y = touch.y as usize;
+                    */
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
+                    let p = graphics::point::Point {
+                        x: touch.x as usize,
+                        y: touch.y as usize,
+                    };
+                    v.push(p);
                 }
+                let lcd = audio_writer.layer();
+                graphics::polygon::draw_polygon(lcd, &v, color);
             }
         },
     )
