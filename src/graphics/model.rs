@@ -9,4 +9,5 @@ pub struct Model {
 pub struct CursorModel {
     pub first_contact: Option<Point>,
     pub second_contact: Option<Point>,
+    pub last_contact: Option<Point>,
 }

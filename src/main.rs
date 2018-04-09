@@ -190,7 +190,7 @@ fn main(hw: board::Hardware) -> ! {
             let mut last_y = 0; */
             let color = stm32f7::lcd::Color::rgb(255, 255, 255);
             let mut duration_of_touch = 0;
-            let mut cursor_model = graphics::model::CursorModel{first_contact: None, second_contact: None};
+            let mut cursor_model = graphics::model::CursorModel{first_contact: None, second_contact: None, last_contact: None};
             let mut model = graphics::model::Model{p: graphics::point::Point{x:100, y:50}, r:20, cursor: cursor_model};
             loop {
                 let ticks = system_clock::ticks();

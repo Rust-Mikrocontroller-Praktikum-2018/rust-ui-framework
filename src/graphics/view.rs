@@ -13,5 +13,10 @@ pub fn view<T: Framebuffer>(m: &Model, lcd: &mut Layer<T>) {
         Some(ref p) => circle::draw_circle(lcd, &p, 10, Color::from_hex(0xFF0000)),
         None => (),
     }
+
+    match m.cursor.last_contact {
+        Some(ref p) => circle::draw_circle(lcd, &p, m.r, Color::from_hex(0x00FF00)),
+        None => (),
+    }
     
 }
