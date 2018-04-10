@@ -323,6 +323,44 @@ impl<'a, T: Framebuffer> TextWriter<'a, T> {
         self.y_pos = y;
         self.write_str_no_newlines(s);
     }
+
+    pub fn clear_str_no_newlines(&mut self, s: &str) -> fmt::Result {
+        let font_height = self.font_renderer.font_height() as usize;
+        let &mut TextWriter {
+            ref mut layer,
+            ref mut font_renderer,
+            ref mut x_pos,
+            ref mut y_pos,
+            ..
+        } = self;
+
+        let width = font_renderer.render(s, |x, y, v| {
+            if *x_pos + x >= WIDTH {
+                *x_pos = 0;
+                *y_pos += font_height;
+            }
+            if *y_pos + font_height >= HEIGHT {
+                *y_pos = 0;
+                layer.clear();
+            }
+            let alpha = (0) as u8;
+            let color = Color {
+                red: 255,
+                green: 255,
+                blue: 255,
+                alpha,
+            };
+            layer.print_point_color_at(*x_pos + x, *y_pos + y, color);
+        });
+        *x_pos += width;
+        Ok(())
+    }
+
+    pub fn clear_str_at(&mut self, x: usize, y: usize, s: &str){
+        self.x_pos = x;
+        self.y_pos = y;
+        self.clear_str_no_newlines(s);
+    }
 }
 
 impl<'a, T: Framebuffer> fmt::Write for TextWriter<'a, T> {

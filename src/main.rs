@@ -302,6 +302,6 @@ fn find_widget(p: &graphics::point::Point, widgets: &Vec<Box<UIComponent>>) -> O
 use stm32f7::lcd::Layer;
 fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
     for w in widgets{
-        w.draw(lcd_ui, lcd_text);
+        w.draw(None, lcd_ui, lcd_text);
     }
 }
