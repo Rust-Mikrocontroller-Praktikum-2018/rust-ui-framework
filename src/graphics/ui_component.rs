@@ -1,6 +1,5 @@
 use stm32f7::lcd::Framebuffer;
 use stm32f7::lcd::Layer;
-use lcd::Color;
 use graphics::point::Point;
 
 pub trait UIComponent {
