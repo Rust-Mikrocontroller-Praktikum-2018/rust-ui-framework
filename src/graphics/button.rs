@@ -11,11 +11,6 @@ pub struct Button {
     pub text: &'static str,
 }
 
-// impl Button {
-//     pub fn button_action() {
-//     }
-// }
-
 impl UIComponent for Button {
     fn paint<T: Framebuffer, V: Framebuffer> (&self, lcd_ui: &mut Layer<T>, lcd_text: &mut Layer<V>, fg: Color) {
         rectangle::draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, fg, true);
@@ -27,13 +22,12 @@ impl UIComponent for Button {
         self.paint(lcd_ui, lcd_text, bg);
     }
 
-    fn click(&self, point: Point) -> bool {
+    fn is_in_bounding_box(&self, point: Point) -> bool {
         if point.x < self.upper_left.x || point.y < self.upper_left.y {
             false
         } else if point.x > self.lower_right.x || point.y > self.lower_right.y {
             false
         } else {
-            // self.button_action();
             true
         }
     }
