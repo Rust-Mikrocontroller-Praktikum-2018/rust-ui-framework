@@ -8,24 +8,27 @@ pub trait UIComponent {
     /**
      * Clears the component by repainting it with the background color.
      */
-    fn clear<T: Framebuffer, V: Framebuffer> (&self, lcd_ui: &mut Layer<T>, lcd_text: &mut Layer<V>, bg: Color);
+    fn clear<T: Framebuffer, V: Framebuffer> (&self, lcd_ui: &mut Layer<T>, lcd_text: &mut Layer<V>);
 
     fn is_in_bounding_box(&self, p: Point) -> bool;
 
     fn on_touch(&mut self, evt: TouchEvent) -> Option<Message>;
 
-    fn on_click(&mut self, m: Message);
-
-    fn draw(&self, old_widget: Option<UIComponent>, lcd_ui: &mut Layer<T>, lcd_text: &mut Layer<V>);
+    fn draw<T: Framebuffer, V: Framebuffer>(&self, old_widget: Option<&Self>, lcd_ui: &mut Layer<T>, lcd_text: &mut Layer<V>);
 }
 
-enum TouchEvent{
+pub trait Clickable {
+    fn on_click(&mut self, m: Message);
+}
+
+pub enum TouchEvent{
     Pressed(Point),
     Moved(Point),
     Released,
 }
 
-enum Message{
+pub enum Message{
+    OnButtonClick,
     OnSomeButtonClick,
     OnMyCircleDrag(i32, i32)
 }

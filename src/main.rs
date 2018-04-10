@@ -212,10 +212,21 @@ fn main(hw: board::Hardware) -> ! {
                     upper_left: upper_left,
                     lower_right: lower_right,
                     text: text,
+                    color :color,
                 };
-                button.paint(&mut layer_1, &mut layer_2, color);
-                button.paint(&mut layer_1b, &mut layer_2, color);
+            
+            let new_upper_left = graphics::point::Point{x: 30, y: 20};
+            let new_lower_right = graphics::point::Point {x : 200, y: 60};
+            let new_text = "I am a new button.";
+            let new_button = graphics::button::Button {
+                upper_left: new_upper_left,
+                lower_right: new_lower_right,
+                text: new_text,
+                color: color,
+            };
 
+            button.draw(None, &mut layer_1, &mut layer_2,);
+            button.draw(None, &mut layer_1b, &mut layer_2,);
                 // if button.click(cursor_model.first_contact) {
                     
                 // }
@@ -259,6 +270,12 @@ fn main(hw: board::Hardware) -> ! {
                     last_y = touch.y as usize; */
                     // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
                 } */
+
+                new_button.draw(Some(&button), &mut layer_1, &mut layer_2,);
+                new_button.draw(Some(&button), &mut layer_1b, &mut layer_2,);
+
+                button.draw(Some(&new_button), &mut layer_1, &mut layer_2,);
+                button.draw(Some(&new_button), &mut layer_1b, &mut layer_2,);
 
                 model = graphics::update::update(model, &touch::touches(&mut i2c_3).unwrap());
                 let active_layer = myview.view(&model, &mut layer_1, &mut layer_1b);
