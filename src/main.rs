@@ -22,7 +22,13 @@ extern crate smoltcp;
 use stm32f7::{audio, board, embedded, lcd, sdram, system_clock, touch, i2c};
 use graphics::ui_component::UIComponent;
 
+use graphics::{Message, TouchEvent};
+use alloc::Vec;
+use alloc::boxed::Box;
+use stm32f7::lcd::{Framebuffer, FramebufferAl88, FramebufferArgb8888};
+use stm32f7::lcd::Color;
 mod graphics;
+
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -189,82 +195,113 @@ fn main(hw: board::Hardware) -> ! {
                     //lcd.set_background_color(lcd::Color::from_hex(new_color));
                 });
 
-            /* let mut last_x = 0;
-            let mut last_y = 0; */
-            let color = stm32f7::lcd::Color::rgb(100, 100, 100);
-            //let mut duration_of_touch = 0;
-            let mut cursor_model = graphics::model::CursorModel {
-                first_contact: None,
-                second_contact: None,
-                last_contact: None,
+
+            // -------------------------------------------------------------------------------------
+            // ---  User code ----------------------------------------------------------------------
+            // -------------------------------------------------------------------------------------
+            struct Model {
+                counter: i32,
+                c2: i32,
             };
-            let mut model = graphics::model::Model {
-                p: graphics::point::Point { x: 100, y: 50 },
-                r: 20,
-                cursor: cursor_model,
-            };
-            let mut myview = graphics::view::View::new();
 
-            let upper_left = graphics::point::Point { x: 10, y: 10 };
-            let lower_right = graphics::point::Point { x: 70, y: 40 };
-            let text = "I am a button.";
-            let button = graphics::button::Button {
-                    upper_left: upper_left,
-                    lower_right: lower_right,
-                    text: text,
-                };
-                button.paint(&mut layer_1, &mut layer_2, color);
-                button.paint(&mut layer_1b, &mut layer_2, color);
+            // enum Message
 
-                // if button.click(cursor_model.first_contact) {
-                    
-                // }
+            let mut model = Model{counter: 0, c2: 0};
 
-            loop {
-                //let ticks = system_clock::ticks();
-
-                // every 0.5 seconds
-                //                if ticks - last_led_toggle >= 500 {
-                //                    // toggle the led
-                //                    let led_current = led.get();
-                //                    led.set(!led_current);
-                //                    last_led_toggle = ticks;
-                //                }
-
-                /* let number_of_touches = touch::touches(&mut i2c_3).unwrap().len();
-                    if number_of_touches as i32 == 1{
-                        duration_of_touch += 1;
-                        println!("duration of touch = {}", duration_of_touch);
-                    } else if number_of_touches as i32 == 0 {
-                        duration_of_touch = 0;
-                    }  */
-
-                //println!("test");
-                // text_writer.print_str_at(100, 100, "testString");
-                // text_writer.print_str_at(100, 150, "testString2\ntest");
-
-                // poll for new touch data
-                /* for touch in &touch::touches(&mut i2c_3).unwrap() {
-                    let lcd = audio_writer.layer();
-                    /* let p0 = graphics::point::Point{
-                        x: last_x,
-                        y: last_y,
-                    };
-                    let p1 = graphics::point::Point{
-                        x: touch.x as usize,
-                        y: touch.y as usize,
-                    };
-                    graphics::line::draw_line(lcd, &p0, &p1, color);
-                    last_x = touch.x as usize;
-                    last_y = touch.y as usize; */
-                    // audio_writer.layer().print_point_at(touch.x as usize, touch.y as usize);
-                } */
-
-                model = graphics::update::update(model, &touch::touches(&mut i2c_3).unwrap());
-                let active_layer = myview.view(&model, &mut layer_1, &mut layer_1b);
-
-                lcd.set_framebuffer(active_layer);
+            fn view(m: &Model) -> Vec<Box<UIComponent>> {
+                vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc", Some(Message::Increment))),
+                     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec", Some(Message::Decrement))),
+                     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, "!!!", None))]
             }
+
+            fn update(m: Model, msg: Message) -> Model{
+                match msg {
+                    Message::Increment => Model{counter: m.counter+1, c2: m.c2},
+                    Message::Decrement => Model{counter: m.counter, c2: m.c2+1},
+                }
+            }
+            // -------------------------------------------------------------------------------------
+
+
+            // -------------------------------------------------------------------------------------
+            // ---  Framework code -----------------------------------------------------------------
+            // -------------------------------------------------------------------------------------
+
+            // enum TouchEvent
+
+            use graphics::point::Point;
+            let mut active_widget: Option<usize> = None;
+            let mut widgets: Vec<Box<UIComponent>> = view(&model);
+
+            // initial draw
+            draw(&widgets, &vec![], &mut layer_1, &mut layer_2);
+
+            let mut prev_touch: Option<Point> = None;
+
+            loop{
+                // get touch event
+                let touches = touch::touches(&mut i2c_3).unwrap();
+                let curr_touch = if touches.len() == 1 {
+                    Some(Point{x: touches[0].x as usize, y: touches[0].y as usize})
+                }else{
+                    None
+                };
+                let touch_event = match (prev_touch, curr_touch) {
+                    (None, Some(p)) => Some(TouchEvent::Pressed(p)),
+                    (Some(_), Some(p)) => Some(TouchEvent::Moved(p)),
+                    (Some(_), None) => Some(TouchEvent::Released),
+                    (None, None) => None,
+                };
+                prev_touch = curr_touch;
+
+                // continue if no touch event
+                if touch_event.is_none() {continue;}
+
+                // update active_widget if touch_event is "Pressed"
+                active_widget = match touch_event {
+                    Some(TouchEvent::Pressed(p)) => find_widget(&p, &widgets),
+                    _ => active_widget,
+                };
+
+                // send touch event to active widget
+                let new_msg = match (active_widget, &touch_event) {
+                    (Some(idx), Some(evt)) => widgets[idx].on_touch(&evt),
+                    _ => None,
+                };
+
+                // process message
+                if new_msg.is_some(){
+                    let msg = new_msg.unwrap();
+
+                    model = update(model, msg);
+                    let new_widgets = view(&model);
+                    draw(&new_widgets, &widgets, &mut layer_1, &mut layer_2);
+                    widgets = new_widgets;
+                }
+
+                // reset active widget if touch event is "Released"
+                match touch_event {
+                    Some(TouchEvent::Released) => active_widget = None,
+                    _ => (),
+                }
+            }
+            // -------------------------------------------------------------------------------------
         },
     )
+}
+
+fn find_widget(p: &graphics::point::Point, widgets: &Vec<Box<UIComponent>>) -> Option<usize>{
+    for (idx, w) in widgets.iter().enumerate(){
+        if w.is_in_bounding_box(p){
+            return Some(idx);
+        }
+    }
+    return None;
+}
+
+use stm32f7::lcd::Layer;
+fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+    for w in widgets{
+        w.draw(lcd_ui, lcd_text);
+    }
 }

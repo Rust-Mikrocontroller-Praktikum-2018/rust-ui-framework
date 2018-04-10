@@ -1,10 +1,22 @@
 pub mod line;
 pub mod point;
-pub mod polygon;
+//pub mod polygon;
 pub mod rectangle;
-pub mod circle;
-pub mod model;
-pub mod view;
-pub mod update;
+//pub mod circle;
+//pub mod model;
+//pub mod view;
+//pub mod update;
 pub mod button;
 pub mod ui_component;
+
+#[derive(Clone, Copy)]
+pub enum Message{
+    Increment,
+    Decrement
+}
+
+pub enum TouchEvent{
+    Pressed(point::Point),
+    Moved(point::Point),
+    Released,
+}
