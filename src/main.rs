@@ -203,11 +203,14 @@ fn main(hw: board::Hardware) -> ! {
                 counter: i32,
                 c2: i32,
                 show_text: bool,
+                slider_value: i32,
             };
 
             // enum Message
 
-            let mut model = Model{counter: 0, c2: 0, show_text: true};
+            let mut model = Model{counter: 0, c2: 0, show_text: true, slider_value: 50,};
+
+            let _slider_message = |x| Message::OnChange(x);
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
                 let w_new : Box<UIComponent> = if m.show_text{
@@ -215,10 +218,13 @@ fn main(hw: board::Hardware) -> ! {
                 }else{
                     Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000)))
                 };
-                vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
-                     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
-                     w_new,
-                     Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
+                vec![
+                    Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
+                    Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
+                    w_new,
+                    Box::new(graphics::slider::Slider::new(400, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
+                    Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
+                    Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
                 ]
             }
 
@@ -226,6 +232,7 @@ fn main(hw: board::Hardware) -> ! {
                 match msg {
                     Message::Increment => Model{counter: m.counter+1, ..m},
                     Message::Decrement => Model{c2: m.c2+1, ..m},
+                    Message::OnChange(x) => Model{slider_value: x, ..m},
                 }
             }
             // -------------------------------------------------------------------------------------
