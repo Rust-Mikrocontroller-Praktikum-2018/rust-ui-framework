@@ -26,10 +26,8 @@ use graphics::{Message, TouchEvent};
 use alloc::Vec;
 use alloc::boxed::Box;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
-//use stm32f7::lcd::Color;
+use stm32f7::lcd::Color;
 mod graphics;
-
-use core::any::Any;
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -212,7 +210,8 @@ fn main(hw: board::Hardware) -> ! {
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
                 vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc", Some(Message::Increment))),
                      Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec", Some(Message::Decrement))),
-                     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, "!!!", None))]
+                     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, "!!!", None)),
+                     Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000)))]
             }
 
             fn update(m: Model, msg: Message) -> Model{
