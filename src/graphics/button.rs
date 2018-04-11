@@ -9,11 +9,11 @@ use stm32f7::lcd::Color;
 use core::any::Any;
 
 pub struct Button {
-    pub upper_left: Point,
-    pub lower_right: Point,
-    pub text: &'static str,
+    upper_left: Point,
+    lower_right: Point,
+    text: &'static str,
     on_click_message: Option<Message>,
-    pub color: Color,
+    color: Color,
     last_evt_pos: Point,
 }
 
@@ -52,27 +52,19 @@ impl Button {
 
 impl UIComponent for Button {
 
-    fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message>{
-        match evt {
-            &TouchEvent::Pressed(p) => {
-                self.last_evt_pos = p;
-                None
-            },
-            &TouchEvent::Moved(p) => {
-                self.last_evt_pos = p;
-                None
-            },
-            &TouchEvent::Released =>
-                if self.is_in_bounding_box(&self.last_evt_pos) {
-                    self.on_click_message.clone()
-                }else{
-                    None
-                },
-        }
-    }
-
     fn as_any(&self) -> &Any {
         self
+    }
+
+    fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>) {
+        let bg = Color {
+            red: 255,
+            green: 255,
+            blue: 255,
+            alpha: 0,
+        };
+        rectangle::draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, bg, true);
+        self.clear_text(lcd_text);
     }
 
     fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
@@ -192,17 +184,6 @@ impl UIComponent for Button {
         }
     }
 
-    fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>) {
-        let bg = Color {
-            red: 255,
-            green: 255,
-            blue: 255,
-            alpha: 0,
-        };
-        rectangle::draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, bg, true);
-        self.clear_text(lcd_text);
-    }
-
     fn is_in_bounding_box(&self, point: &Point) -> bool {
         if point.x < self.upper_left.x || point.y < self.upper_left.y {
             false
@@ -210,6 +191,25 @@ impl UIComponent for Button {
             false
         } else {
             true
+        }
+    }
+
+    fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message>{
+        match evt {
+            &TouchEvent::Pressed(p) => {
+                self.last_evt_pos = p;
+                None
+            },
+            &TouchEvent::Moved(p) => {
+                self.last_evt_pos = p;
+                None
+            },
+            &TouchEvent::Released =>
+                if self.is_in_bounding_box(&self.last_evt_pos) {
+                    self.on_click_message.clone()
+                }else{
+                    None
+                },
         }
     }
 }
