@@ -25,10 +25,11 @@ use graphics::ui_component::UIComponent;
 use graphics::{Message, TouchEvent};
 use alloc::Vec;
 use alloc::boxed::Box;
-use stm32f7::lcd::{Framebuffer, FramebufferAl88, FramebufferArgb8888};
-use stm32f7::lcd::Color;
+use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
+//use stm32f7::lcd::Color;
 mod graphics;
 
+use core::any::Any;
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -301,7 +302,12 @@ fn find_widget(p: &graphics::point::Point, widgets: &Vec<Box<UIComponent>>) -> O
 
 use stm32f7::lcd::Layer;
 fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
-    for w in widgets{
-        w.draw(None, lcd_ui, lcd_text);
+    for (idx, w) in widgets.iter().enumerate(){
+        let old_widget = if idx < old_widgets.len() {
+            Some(old_widgets[idx].as_any() as &Any)
+        }else{
+            None
+        };
+        w.draw(old_widget, lcd_ui, lcd_text);
     }
 }

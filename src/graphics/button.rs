@@ -6,12 +6,15 @@ use stm32f7::lcd::Layer;
 use graphics::{Message, TouchEvent};
 use stm32f7::lcd::Color;
 
+use core::any::Any;
+
 pub struct Button {
     pub upper_left: Point,
     pub lower_right: Point,
     pub text: &'static str,
     on_click_message: Option<Message>,
     pub color: Color,
+    last_evt_pos: Point,
 }
 
 impl Button {
@@ -22,6 +25,7 @@ impl Button {
             text,
             on_click_message,
             color: Color::from_hex(0x555555),
+            last_evt_pos: Point{x: 0, y:0},
         }
     }
 
@@ -50,18 +54,40 @@ impl UIComponent for Button {
 
     fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message>{
         match evt {
-            &TouchEvent::Released => self.on_click_message.clone(),
-            _ => None,
+            &TouchEvent::Pressed(p) => {
+                self.last_evt_pos = p;
+                None
+            },
+            &TouchEvent::Moved(p) => {
+                self.last_evt_pos = p;
+                None
+            },
+            &TouchEvent::Released =>
+                if self.is_in_bounding_box(&self.last_evt_pos) {
+                    self.on_click_message.clone()
+                }else{
+                    None
+                },
         }
     }
 
-    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+    fn as_any(&self) -> &Any {
+        self
+    }
+
+    fn draw(&self, old_widget: Option<&Any>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
         let bg = Color {
             red: 255,
             green: 255,
             blue: 255,
             alpha: 0,
         };
+
+        let old_widget = match old_widget {
+            Some(ow) => ow.downcast_ref::<Button>(),
+            None => None,
+        };
+
         match old_widget {
             Some(o_w) =>
                 // if old and new don't lay over each other, clear old and draw new
