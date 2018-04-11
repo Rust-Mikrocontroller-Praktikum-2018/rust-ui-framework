@@ -1,5 +1,47 @@
-use stm32f7::lcd::{Layer, Framebuffer, Color};
-use graphics::{line, point::Point};
+use stm32f7::lcd::{Layer, Framebuffer, Color, FramebufferArgb8888, FramebufferAl88};
+use graphics::{line, point::Point, TouchEvent, Message};
+use graphics::ui_component::UIComponent;
+
+use core::any::Any;
+use alloc::Vec;
+
+pub struct Polygon {
+    points: Vec<Point>,
+    color: Color,
+    filled: bool,
+}
+
+impl Polygon {
+    pub fn new(points: Vec<Point>, color: Color, filled: bool) -> Polygon{
+        Polygon{
+            points,
+            color,
+            filled,
+        }
+    }
+}
+
+impl UIComponent for Polygon {
+    fn as_any(&self) -> &Any{
+        self
+    }
+
+    fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, _lcd_text: &mut Layer<FramebufferAl88>){
+        draw_polygon(lcd_ui, &self.points, Color::rgba(0,0,0,0), self.filled);
+    }
+
+    fn is_in_bounding_box(&self, _p: &Point) -> bool{
+        false
+    }
+
+    fn on_touch(&mut self, _evt: &TouchEvent) -> Option<Message>{
+        None
+    }
+
+    fn paint(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, _lcd_text: &mut Layer<FramebufferAl88>){
+        draw_polygon(lcd_ui, &self.points, self.color, self.filled);
+    }
+}
 
 pub fn draw_polygon<T: Framebuffer> (lcd: &mut Layer<T>, points: &[Point], color: Color, fill: bool) {
     if !(points.len() > 2) {
