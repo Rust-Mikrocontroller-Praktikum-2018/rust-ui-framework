@@ -30,6 +30,30 @@ impl UIComponent for Polygon {
         draw_polygon(lcd_ui, &self.points, Color::rgba(0,0,0,0), self.filled);
     }
 
+    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+
+        let old_poly = match old_widget {
+            Some(ow) => ow.as_any().downcast_ref::<Polygon>(),
+            None => None,
+        };
+
+        match old_poly {
+            Some(o_w) => {
+                if o_w.points != self.points || o_w.color != self.color || o_w.filled != self.filled {
+                    o_w.clear(lcd_ui, lcd_text);
+                    self.paint(lcd_ui, lcd_text);
+                }
+            },
+            None => {
+                if old_widget.is_some(){
+                    old_widget.unwrap().clear(lcd_ui, lcd_text);
+                }
+
+                self.paint(lcd_ui, lcd_text);
+            }
+        }
+    }
+
     fn is_in_bounding_box(&self, _p: &Point) -> bool{
         false
     }

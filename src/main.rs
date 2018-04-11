@@ -218,7 +218,7 @@ fn main(hw: board::Hardware) -> ! {
                 vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
                      Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
                      w_new,
-                     Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: 100}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
+                     Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
                 ]
             }
 
@@ -317,6 +317,4 @@ fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lc
         };
         w.draw(old_widget, lcd_ui, lcd_text);
     }
-
-    graphics::circle::draw_filled_circle(lcd_ui, &graphics::point::Point{x: 300, y:200}, 50, Color::from_hex(0x00ff00), false);
 }
