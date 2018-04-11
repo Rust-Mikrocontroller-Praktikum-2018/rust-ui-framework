@@ -39,8 +39,9 @@ fn get_bounds(points: &[Point]) -> (Point, Point) {
     }
 
     (
-        Point {x: min_x, y: min_y,},
-        Point {x: max_x, y: max_y,},
+        // screen size: 480x272
+        Point {x: min_x.max(0), y: min_y.max(0),},
+        Point {x: max_x.min(480-1), y: max_y.min(272-1),},
     )
 }
 
