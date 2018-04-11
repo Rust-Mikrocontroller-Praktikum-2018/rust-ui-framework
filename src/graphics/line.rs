@@ -27,7 +27,7 @@ pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, col
             y0 = y1;
             y1 = y;
         }
-        for x in x0.min(0)..=x1.max(480-1) {
+        for x in x0.max(0)..=x1.min(480-1) {
             let x = x - x0;
             let height = (y1 - y0) * x / (x1 - x0);
             lcd.print_point_color_at((x + x0) as usize, (y0 + height) as usize, color);
@@ -41,7 +41,7 @@ pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, col
             y0 = y1;
             y1 = y;
         }
-        for y in y0.min(0)..=y1.max(272-1) {
+        for y in y0.max(0)..=y1.min(272-1) {
             let y = y - y0;
             let height = (x1 - x0) * y / (y1 - y0);
             lcd.print_point_color_at((x0 + height) as usize, (y + y0) as usize, color);
