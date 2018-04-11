@@ -201,23 +201,28 @@ fn main(hw: board::Hardware) -> ! {
             struct Model {
                 counter: i32,
                 c2: i32,
+                show_text: bool,
             };
 
             // enum Message
 
-            let mut model = Model{counter: 0, c2: 0};
+            let mut model = Model{counter: 0, c2: 0, show_text: false};
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
+                let w_new : Box<UIComponent> = if m.show_text{
+                    Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, "!!!", None))
+                }else{
+                    Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000)))
+                };
                 vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc", Some(Message::Increment))),
                      Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec", Some(Message::Decrement))),
-                     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, "!!!", None)),
-                     Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000)))]
+                     w_new,]
             }
 
             fn update(m: Model, msg: Message) -> Model{
                 match msg {
-                    Message::Increment => Model{counter: m.counter+1, c2: m.c2},
-                    Message::Decrement => Model{counter: m.counter, c2: m.c2+1},
+                    Message::Increment => Model{counter: m.counter+1, ..m},
+                    Message::Decrement => Model{show_text: !m.show_text, ..m},
                 }
             }
             // -------------------------------------------------------------------------------------
