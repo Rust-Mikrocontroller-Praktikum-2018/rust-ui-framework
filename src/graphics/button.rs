@@ -75,7 +75,7 @@ impl UIComponent for Button {
         self
     }
 
-    fn draw(&self, old_widget: Option<&Any>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
         let bg = Color {
             red: 255,
             green: 255,
@@ -83,12 +83,12 @@ impl UIComponent for Button {
             alpha: 0,
         };
 
-        let old_widget = match old_widget {
-            Some(ow) => ow.downcast_ref::<Button>(),
+        let old_button = match old_widget {
+            Some(ow) => ow.as_any().downcast_ref::<Button>(),
             None => None,
         };
 
-        match old_widget {
+        match old_button {
             Some(o_w) =>
                 // if old and new don't lay over each other, clear old and draw new
                 if o_w.lower_right.x <= self.upper_left.x || o_w.lower_right.y <= self.upper_left.y || o_w.upper_left.x >= self.lower_right.x ||
@@ -176,6 +176,10 @@ impl UIComponent for Button {
                 }
                 },
             None => {
+                if old_widget.is_some(){
+                    old_widget.unwrap().clear(lcd_ui, lcd_text);
+                }
+
                 rectangle::draw_rectangle(
                     lcd_ui,
                     &self.upper_left,

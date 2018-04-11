@@ -11,7 +11,7 @@ pub trait UIComponent : Any{
 
     fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message>;
 
-    fn draw(&self, old_widget: Option<&Any>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>);
+    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>);
 
     fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>);
 
