@@ -325,5 +325,6 @@ fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lc
         w.draw(old_widget, lcd_ui, lcd_text);
     }
 
-    graphics::circle::draw_filled_circle(lcd_ui, &graphics::point::Point{x: 300, y:200}, 50, Color::from_hex(0x00ff00), false);
-}
+    let circle = graphics::circle::Circle::new(graphics::point::Point{x: 300, y:200}, 30, Color::from_hex(0x00ff00), true);
+    circle.paint(lcd_ui, lcd_text);
+ }

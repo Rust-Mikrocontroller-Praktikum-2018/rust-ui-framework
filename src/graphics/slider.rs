@@ -72,7 +72,7 @@ impl<F: Fn(i32) -> Message + 'static> UIComponent for Slider<F> {
 
     fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message> {
         match *evt {
-            TouchEvent::Pressed(p) => {
+            TouchEvent::Pressed(_p) => {
                 None
             },
             TouchEvent::Moved(p) => {
