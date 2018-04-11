@@ -11,9 +11,17 @@ pub trait UIComponent : Any{
 
     fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>);
 
-    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>);
+    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+        match old_widget {
+            Some(w) => w.clear(lcd_ui, lcd_text),
+            _ => ()
+        }
+        self.paint(lcd_ui, lcd_text);
+    }
 
     fn is_in_bounding_box(&self, p: &Point) -> bool;
 
     fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message>;
+
+    fn paint(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>);
 }

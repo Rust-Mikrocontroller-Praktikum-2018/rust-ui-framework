@@ -28,6 +28,7 @@ use alloc::boxed::Box;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
 use stm32f7::lcd::Color;
 mod graphics;
+use alloc::string::ToString;
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -206,23 +207,23 @@ fn main(hw: board::Hardware) -> ! {
 
             // enum Message
 
-            let mut model = Model{counter: 0, c2: 0, show_text: false};
+            let mut model = Model{counter: 0, c2: 0, show_text: true};
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
                 let w_new : Box<UIComponent> = if m.show_text{
-                    Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, "!!!", None))
+                    Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
                 }else{
                     Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000)))
                 };
-                vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc", Some(Message::Increment))),
-                     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec", Some(Message::Decrement))),
+                vec![Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
+                     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
                      w_new,]
             }
 
             fn update(m: Model, msg: Message) -> Model{
                 match msg {
                     Message::Increment => Model{counter: m.counter+1, ..m},
-                    Message::Decrement => Model{show_text: !m.show_text, ..m},
+                    Message::Decrement => Model{c2: m.c2+1, ..m},
                 }
             }
             // -------------------------------------------------------------------------------------
@@ -314,4 +315,6 @@ fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lc
         };
         w.draw(old_widget, lcd_ui, lcd_text);
     }
+
+    graphics::circle::draw_filled_circle(lcd_ui, &graphics::point::Point{x: 300, y:200}, 50, Color::from_hex(0x00ff00), false);
 }

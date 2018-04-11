@@ -7,9 +7,9 @@ use core::any::Any;
 
 
 pub struct Rectangle {
-    upper_left: Point,
-    lower_right: Point,
-    color: Color,
+    pub upper_left: Point,
+    pub lower_right: Point,
+    pub color: Color,
 }
 
 impl Rectangle {
@@ -19,10 +19,6 @@ impl Rectangle {
             lower_right: Point { x: left + width, y: top + height },
             color,
         }
-    }
-
-    fn paint(&self, lcd_ui: &mut Layer<FramebufferArgb8888>) {
-        self.paint_with_color(lcd_ui, self.color);
     }
 
     fn paint_transparent(&self, lcd_ui: &mut Layer<FramebufferArgb8888>) {
@@ -125,7 +121,7 @@ impl UIComponent for Rectangle {
                     bg,
                     true,
                  );
-                 self.paint(lcd_ui);
+                 self.paint(lcd_ui, lcd_text);
                 }
                 },
             None => {
@@ -133,7 +129,7 @@ impl UIComponent for Rectangle {
                     old_widget.unwrap().clear(lcd_ui, lcd_text);
                 }
 
-                self.paint(lcd_ui);
+                self.paint(lcd_ui, lcd_text);
             }
         }
     }
@@ -147,6 +143,10 @@ impl UIComponent for Rectangle {
 
     fn on_touch(&mut self, _evt: &TouchEvent) -> Option<Message>{
         None
+    }
+
+    fn paint(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, _lcd_text: &mut Layer<FramebufferAl88>) {
+        self.paint_with_color(lcd_ui, self.color);
     }
 }
 
