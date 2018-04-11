@@ -224,6 +224,7 @@ fn main(hw: board::Hardware) -> ! {
                     w_new,
                     Box::new(graphics::slider::Slider::new(400, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
                     Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
+                    Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: 100}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
                 ]
             }
 
