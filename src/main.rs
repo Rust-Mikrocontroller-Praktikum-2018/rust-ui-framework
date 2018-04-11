@@ -304,7 +304,7 @@ use stm32f7::lcd::Layer;
 fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
     for (idx, w) in widgets.iter().enumerate(){
         let old_widget = if idx < old_widgets.len() {
-            Some(old_widgets[idx].as_any() as &Any)
+            Some(old_widgets[idx].as_ref())
         }else{
             None
         };
