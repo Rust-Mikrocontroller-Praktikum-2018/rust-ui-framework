@@ -1,15 +1,17 @@
 pub mod line;
 pub mod point;
-//pub mod polygon;
+pub mod polygon;
 pub mod rectangle;
 pub mod circle;
 pub mod button;
 pub mod ui_component;
+pub mod slider;
 
 #[derive(Clone, Copy)]
 pub enum Message{
     Increment,
-    Decrement
+    Decrement,
+    OnChange(i32),
 }
 
 pub enum TouchEvent{
