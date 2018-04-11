@@ -11,6 +11,9 @@ pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, col
     let y_diff = (y0 - y1).abs();
 
     if p0.x == p1.x && p0.y == p1.y {
+        if p0.x >= 480 || p0.y >= 272 { // screen size: 480x272
+            return;
+        }
         lcd.print_point_color_at(p0.x, p0.y, color);
         return;
     }
@@ -24,7 +27,7 @@ pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, col
             y0 = y1;
             y1 = y;
         }
-        for x in x0..=x1 {
+        for x in x0.min(0)..=x1.max(480-1) {
             let x = x - x0;
             let height = (y1 - y0) * x / (x1 - x0);
             lcd.print_point_color_at((x + x0) as usize, (y0 + height) as usize, color);
@@ -38,7 +41,7 @@ pub fn draw_line<T: Framebuffer>(lcd: &mut Layer<T>, p0: &Point, p1: &Point, col
             y0 = y1;
             y1 = y;
         }
-        for y in y0..=y1 {
+        for y in y0.min(0)..=y1.max(272-1) {
             let y = y - y0;
             let height = (x1 - x0) * y / (y1 - y0);
             lcd.print_point_color_at((x0 + height) as usize, (y + y0) as usize, color);
