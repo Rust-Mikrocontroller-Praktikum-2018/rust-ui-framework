@@ -266,7 +266,7 @@ fn main(hw: board::Hardware) -> ! {
 
                 // send touch event to active widget
                 let new_msg = match (active_widget, &touch_event) {
-                    (Some(idx), Some(evt)) => widgets[idx].on_touch(&evt),
+                    (Some(idx), &Some(ref evt)) => widgets[idx].on_touch(&evt),
                     _ => None,
                 };
 
