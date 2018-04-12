@@ -34,22 +34,9 @@ impl<F: Fn(i32) -> Message> Slider<F> {
 }
 
 impl<F: Fn(i32) -> Message + 'static> UIComponent for Slider<F> {
-    fn paint(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, _lcd_text: &mut Layer<FramebufferAl88>) {
-        let status_height: i32 = self.height as i32 * self.value / (self.max_value - self.min_value);
-        let lower_right_bg = Point {
-            x: self.left + self.width,
-            y: self.top + self.height - (status_height as usize + 1),
-        };
-        let upper_left_fg = Point {
-            x: self.left,
-            y: lower_right_bg.y + 1,
-        };
-        let lower_right_fg = Point {
-            x: self.left + self.width,
-            y: self.top + self.height,
-        };
-        rectangle::draw_rectangle(lcd_ui, &Point{x: self.left, y: self.top}, &lower_right_bg, self.bg_color, true);
-        rectangle::draw_rectangle(lcd_ui, &upper_left_fg, &lower_right_fg, self.fg_color, true);
+
+    fn as_any(&self) -> &Any {
+        self
     }
 
     fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, _lcd_text: &mut Layer<FramebufferAl88>) {
@@ -87,7 +74,21 @@ impl<F: Fn(i32) -> Message + 'static> UIComponent for Slider<F> {
         }
     }
 
-    fn as_any(&self) -> &Any {
-        self
+    fn paint(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, _lcd_text: &mut Layer<FramebufferAl88>) {
+        let status_height: i32 = self.height as i32 * self.value / (self.max_value - self.min_value);
+        let lower_right_bg = Point {
+            x: self.left + self.width,
+            y: self.top + self.height - (status_height as usize + 1),
+        };
+        let upper_left_fg = Point {
+            x: self.left,
+            y: lower_right_bg.y + 1,
+        };
+        let lower_right_fg = Point {
+            x: self.left + self.width,
+            y: self.top + self.height,
+        };
+        rectangle::draw_rectangle(lcd_ui, &Point{x: self.left, y: self.top}, &lower_right_bg, self.bg_color, true);
+        rectangle::draw_rectangle(lcd_ui, &upper_left_fg, &lower_right_fg, self.fg_color, true);
     }
 }
