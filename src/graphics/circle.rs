@@ -12,9 +12,9 @@ pub struct Circle {
 }
 
 impl Circle {
-    pub fn new(midpoint: Point, radius: i32, color: Color, filled: bool) -> Circle {
+    pub fn new(x: usize, y: usize, radius: i32, color: Color, filled: bool) -> Circle {
         Circle {
-            midpoint,
+            midpoint: Point{x, y},
             radius,
             color,
             filled,
