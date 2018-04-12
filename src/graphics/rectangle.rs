@@ -19,7 +19,7 @@ impl Rectangle {
             upper_left: Point { x: left, y: top },
             lower_right: Point { x: left + width, y: top + height },
             color,
-            filled
+            filled,
         }
     }
 
@@ -39,7 +39,7 @@ impl UIComponent for Rectangle {
         self.paint_transparent(lcd_ui);
     }
 
-    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+    fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>) {
         let bg = Color {
             red: 255,
             green: 255,
@@ -54,80 +54,81 @@ impl UIComponent for Rectangle {
 
         match old_rect {
             Some(o_w) =>
-                // if old and new don't lay over each other or one of them is not filled, clear old and draw new
+            // if old and new don't lay over each other or one of them is not filled, clear old and draw new
                 if o_w.lower_right.x <= self.upper_left.x || o_w.lower_right.y <= self.upper_left.y || o_w.upper_left.x >= self.lower_right.x ||
-                o_w.upper_left.y >= self.lower_right.y || !o_w.filled || !self.filled {
+                    o_w.upper_left.y >= self.lower_right.y || !o_w.filled || !self.filled {
                     o_w.clear(lcd_ui, lcd_text);
                     draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, self.color, self.filled);
                 } else {
 
-                //if colors of o_w and self are equal, start comparing positions
-                if o_w.color.red == self.color.red && o_w.color.blue == self.color.blue && o_w.color.green == self.color.green && o_w.color.alpha == self.color.alpha  {
-
-                 let max_x_upper_left : usize;
+                    //if colors of o_w and self are equal, start comparing positions
+                    if o_w.color.red == self.color.red && o_w.color.blue == self.color.blue && o_w.color.green == self.color.green && o_w.color.alpha == self.color.alpha {
+                        let max_x_upper_left: usize;
                         if o_w.upper_left.x >= self.upper_left.x {
                             max_x_upper_left = o_w.upper_left.x;
                         } else {
                             max_x_upper_left = self.upper_left.x;
                         };
-                 let max_y_upper_left : usize;
+                        let max_y_upper_left: usize;
                         if o_w.upper_left.y >= self.upper_left.y {
                             max_y_upper_left = o_w.upper_left.y;
                         } else {
                             max_y_upper_left = self.upper_left.y;
                         };
-                 let min_x_lower_right : usize;
+                        let min_x_lower_right: usize;
                         if o_w.lower_right.x <= self.lower_right.x {
                             min_x_lower_right = o_w.lower_right.x;
                         } else {
                             min_x_lower_right = self.lower_right.x;
                         }
 
-                 if o_w.upper_left.x < self.upper_left.x {
-                     //delete left part of old rectangle
-                     draw_rectangle(lcd_ui, &o_w.upper_left, &Point{x: self.upper_left.x, y: o_w.lower_right.y}, bg, true);
-                 } else if o_w.upper_left.x > self.upper_left.x {
-                     // draw left part of new rectangle
-                     draw_rectangle(lcd_ui, &self.upper_left, &Point{x: o_w.upper_left.x, y: self.lower_right.y}, self.color, true);
-                 }
+                        if o_w.upper_left.x < self.upper_left.x {
+                            //delete left part of old rectangle
+                            draw_rectangle(lcd_ui, &o_w.upper_left, &Point { x: self.upper_left.x, y: o_w.lower_right.y }, bg, true);
+                        } else if o_w.upper_left.x > self.upper_left.x {
+                            // draw left part of new rectangle
+                            draw_rectangle(lcd_ui, &self.upper_left, &Point { x: o_w.upper_left.x, y: self.lower_right.y }, self.color, true);
+                        }
 
-                 if o_w.upper_left.y < self.upper_left.y {
-                        //delete upper part of old rectangle (which wasn't deleted before)
-                        draw_rectangle(lcd_ui, &Point{x:max_x_upper_left, y:o_w.upper_left.y}, &Point{x: o_w.lower_right.x, y:self.upper_left.y}, bg, true);
-                 } else if o_w.upper_left.y > self.upper_left.y {
-                        //draw upper part of new rectangle (which wasn't drawn before)
-                        draw_rectangle(lcd_ui, &Point{x:max_x_upper_left, y:self.upper_left.y}, &Point{x: self.lower_right.x, y:o_w.upper_left.y}, self.color, true);
-                 }
+                        if o_w.upper_left.y < self.upper_left.y {
+                            //delete upper part of old rectangle (which wasn't deleted before)
+                            draw_rectangle(lcd_ui, &Point { x: max_x_upper_left, y: o_w.upper_left.y }, &Point { x: o_w.lower_right.x, y: self.upper_left.y }, bg, true);
+                        } else if o_w.upper_left.y > self.upper_left.y {
+                            //draw upper part of new rectangle (which wasn't drawn before)
+                            draw_rectangle(lcd_ui, &Point { x: max_x_upper_left, y: self.upper_left.y }, &Point { x: self.lower_right.x, y: o_w.upper_left.y }, self.color, true);
+                        }
 
-                 if o_w.lower_right.x < self.lower_right.x {
-                        //draw right part of new rectangle (which wasn't drawn before)
-                        draw_rectangle(lcd_ui, &Point{x:o_w.lower_right.x, y:max_y_upper_left}, &self.lower_right, self.color, true);
-                 } else if o_w.lower_right.x > self.lower_right.x {
-                        //delete right part of old rectangle (which wasn't deleted before)
-                        draw_rectangle(lcd_ui, &Point{x:self.lower_right.x, y:max_y_upper_left}, &o_w.lower_right, bg, true);
-                 }
+                        if o_w.lower_right.x < self.lower_right.x {
+                            //draw right part of new rectangle (which wasn't drawn before)
+                            draw_rectangle(lcd_ui, &Point { x: o_w.lower_right.x, y: max_y_upper_left }, &self.lower_right, self.color, true);
+                        } else if o_w.lower_right.x > self.lower_right.x {
+                            //delete right part of old rectangle (which wasn't deleted before)
+                            draw_rectangle(lcd_ui, &Point { x: self.lower_right.x, y: max_y_upper_left }, &o_w.lower_right, bg, true);
+                        }
 
-                 if o_w.lower_right.y < self.lower_right.y {
-                        //draw lower part of new rectangle (which wasn't drawn before)
-                        draw_rectangle(lcd_ui, &Point{x:max_x_upper_left, y: o_w.lower_right.y}, &Point{x:min_x_lower_right, y:self.lower_right.y}, self.color, true);
-                 } else if o_w.lower_right.y > self.lower_right.y {
-                        //delete lower part of old rectangle (which wasn't deleted before)
-                        draw_rectangle(lcd_ui, &Point{x:max_x_upper_left, y: self.lower_right.y}, &Point{x:min_x_lower_right, y:o_w.lower_right.y}, bg, true);
-                 }
-
-                } else {
-                 draw_rectangle(
-                    lcd_ui,
-                    &o_w.upper_left,
-                    &o_w.lower_right,
-                    bg,
-                    true,
-                 );
-                 self.paint(lcd_ui, lcd_text);
-                }
+                        if o_w.lower_right.y < self.lower_right.y {
+                            //draw lower part of new rectangle (which wasn't drawn before)
+                            draw_rectangle(lcd_ui, &Point { x: max_x_upper_left, y: o_w.lower_right.y }, &Point { x: min_x_lower_right, y: self.lower_right.y }, self.color, true);
+                        } else if o_w.lower_right.y > self.lower_right.y {
+                            //delete lower part of old rectangle (which wasn't deleted before)
+                            draw_rectangle(lcd_ui, &Point { x: max_x_upper_left, y: self.lower_right.y }, &Point { x: min_x_lower_right, y: o_w.lower_right.y }, bg, true);
+                        }
+                    } else {
+                        if o_w.upper_left != self.upper_left || o_w.lower_right != self.lower_right {
+                            // clear old rectangle
+                            draw_rectangle(
+                                lcd_ui,
+                                &o_w.upper_left,
+                                &o_w.lower_right,
+                                bg,
+                                true,
+                            );
+                        }
+                        self.paint(lcd_ui, lcd_text);
+                    }
                 },
             None => {
-                if old_widget.is_some(){
+                if old_widget.is_some() {
                     old_widget.unwrap().clear(lcd_ui, lcd_text);
                 }
 
@@ -143,7 +144,7 @@ impl UIComponent for Rectangle {
             p.y <= self.lower_right.y;
     }
 
-    fn on_touch(&mut self, _evt: &TouchEvent) -> Option<Message>{
+    fn on_touch(&mut self, _evt: &TouchEvent) -> Option<Message> {
         None
     }
 
@@ -153,7 +154,7 @@ impl UIComponent for Rectangle {
 }
 
 // TODO: make private
-pub fn draw_rectangle(lcd_ui: &mut Layer<FramebufferArgb8888>, ul: &Point, lr: &Point, color: Color, fill: bool){
+pub fn draw_rectangle(lcd_ui: &mut Layer<FramebufferArgb8888>, ul: &Point, lr: &Point, color: Color, fill: bool) {
     if fill {
         for y in ul.y.min(271)..=lr.y.min(271) {
             for x in ul.x.min(479)..=lr.x.min(479) {

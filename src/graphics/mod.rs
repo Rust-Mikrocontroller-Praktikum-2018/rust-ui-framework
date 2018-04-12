@@ -25,6 +25,9 @@ pub enum Message{
     ToDotScreen,
     ToColorScreen,
     OnChange(i32),
+    ColorRed(i32),
+    ColorGreen(i32),
+    ColorBlue(i32),
 }
 
 pub enum TouchEvent{
