@@ -54,6 +54,7 @@ pub mod ui{
     use graphics::circle::Circle;
     use graphics::polygon::Polygon;
     use graphics::point::Point;
+    use graphics::text_element::TextElement;
     use stm32f7::lcd::Color;
     use graphics::Message;
 
@@ -79,5 +80,9 @@ pub mod ui{
 
     pub fn point(x: usize, y: usize) -> Point {
         Point{x, y}
+    }
+
+    pub fn text_element(x_pos: usize, y_pos: usize, text: String) -> Box<TextElement>{
+        Box::new(TextElement::new(x_pos, y_pos, text))
     }
 }
