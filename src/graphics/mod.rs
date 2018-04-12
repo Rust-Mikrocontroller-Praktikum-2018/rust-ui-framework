@@ -2,6 +2,7 @@
 pub mod point;
 pub mod ui_component;
 
+mod text_element;
 mod line;
 mod polygon;
 mod rectangle;
@@ -11,6 +12,12 @@ mod slider;
 
 #[derive(Clone, Copy)]
 pub enum Message{
+    CircleLeft,
+    CircleRight,
+    CircleUp,
+    CircleDown,
+    CircleInlarge,
+    CircleDecrease,
     Increment,
     Decrement,
     ToMenuScreen,
