@@ -29,7 +29,7 @@ use alloc::boxed::Box;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
 use stm32f7::lcd::Color;
 mod graphics;
-use alloc::string::ToString;
+use alloc::{String, string::ToString};
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -203,6 +203,7 @@ fn main(hw: board::Hardware) -> ! {
             // -------------------------------------------------------------------------------------
             struct Model {
                 screen: Screen,
+                keyboard_text: String,
                 position_circle_x: usize,
                 position_circle_y: usize,
                 radius_circle: i32,
@@ -210,7 +211,7 @@ fn main(hw: board::Hardware) -> ! {
                 dot_is_rec: bool,
             };
 
-            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100), dot_is_rec: false};
+            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100), dot_is_rec: false, keyboard_text: "".to_string(),};
 
             use graphics::ui;
 
@@ -288,7 +289,11 @@ fn main(hw: board::Hardware) -> ! {
                             menu_button,
                         ]
                     }
-                    _ => vec![menu_button]
+                    Screen::Keyboard => {
+                        vec![
+                            ui::keyboard(m.keyboard_text.clone(), Color::from_hex(0xffffff)),
+                        ]
+                    }
                 }
             }
 
@@ -308,6 +313,11 @@ fn main(hw: board::Hardware) -> ! {
                     Message::ColorRed(x) => Model{color: Color::rgb(x as u8, m.color.green, m.color.blue), ..m},
                     Message::ColorGreen(x) => Model{color: Color::rgb(m.color.red, x as u8, m.color.blue), ..m},
                     Message::ColorBlue(x) => Model{color: Color::rgb(m.color.red, m.color.green, x as u8), ..m},
+                    Message::KeyboardButtonMessage(c) => {
+                        let mut text = m.keyboard_text.clone();
+                        text.push(c);
+                        Model{keyboard_text: text, ..m}
+                    },
                 }
             }
             // -------------------------------------------------------------------------------------
