@@ -216,7 +216,7 @@ fn main(hw: board::Hardware) -> ! {
                 let w_new : Box<UIComponent> = if m.show_text{
                     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
                 }else{
-                    Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000)))
+                    Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000), true))
                 };
                 vec![
                     Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),

@@ -88,8 +88,8 @@ impl UIComponent for Circle {
 
         match old_circ {
             Some(o_w) => {
-                //if midpoints are not equal or new circle is smaller than old, clear old circle and draw new. If midpoints are equal, some improvements are possible
-                if o_w.midpoint.x != self.midpoint.x || o_w.midpoint.y != self.midpoint.y || o_w.radius > self.radius{
+                //if midpoints are not equal or new circle is smaller than old or not filled, clear old circle and draw new. If midpoints are equal, some improvements are possible
+                if o_w.midpoint.x != self.midpoint.x || o_w.midpoint.y != self.midpoint.y || o_w.radius > self.radius || !self.filled{
                     o_w.clear(lcd_ui, lcd_text);
                     self.paint(lcd_ui, lcd_text);
                 } else 
