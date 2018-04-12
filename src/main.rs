@@ -5,6 +5,9 @@
 #![feature(compiler_builtins_lib)]
 #![no_std]
 #![no_main]
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
 
 //#[macro_use]
 extern crate stm32f7_discovery as stm32f7;
