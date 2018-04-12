@@ -223,12 +223,14 @@ fn main(hw: board::Hardware) -> ! {
             use graphics::ui;
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
-                let menu_button = ui::button(430, 20, 30, 30, " X".to_string(), Color::rgb(100, 100, 100), Some(Message::ToMenu));
+                let menu_button = ui::button(430, 20, 30, 30, " X".to_string(), Color::rgb(100, 100, 100), Some(Message::ToMenuScreen));
 
                 match m.screen {
                     Screen::Menu => {
                         vec![
-                            ui::button(20, 50, 150, 30, "Widgets Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToWidgets)),
+                            ui::button(20, 20, 150, 30, "Widgets Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToWidgetsScreen)),
+                            ui::button(20, 60, 150, 30, "Color Picker Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToColorScreen)),
+                            ui::button(20, 100, 150, 30, "Dot Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToDotScreen)),
                         ]
                     }
                     Screen::Widgets => {
@@ -281,7 +283,17 @@ fn main(hw: board::Hardware) -> ! {
                              change_button,
                         ]
                     }
-                    _ => vec![]
+                    Screen::Color => {
+                        let bg = Color::from_hex(0x333333);
+                        vec![
+                            ui::slider(20, 40, 40, 190, 0, 255, m.color.red as i32, bg, Color::from_hex(0xff0000), |x| Message::ColorRed(x)),
+                            ui::slider(80, 40, 40, 190, 0, 255, m.color.green as i32, bg, Color::from_hex(0x00ff00), |x| Message::ColorGreen(x)),
+                            ui::slider(140, 40, 40, 190, 0, 255, m.color.blue as i32, bg, Color::from_hex(0x0000ff), |x| Message::ColorBlue(x)),
+                            ui::rectangle(300, 100, 50, 50, m.color, true),
+                            menu_button,
+                        ]
+                    }
+                    _ => vec![menu_button]
                 }
                 // let w_new : Box<UIComponent> = if m.show_text{
                 //     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
@@ -300,6 +312,10 @@ fn main(hw: board::Hardware) -> ! {
 
             fn update(m: Model, msg: Message) -> Model{
                 match msg {
+                    Message::ToMenuScreen => Model{screen: Screen::Menu, ..m},
+                    Message::ToWidgetsScreen => Model{screen: Screen::Widgets, ..m},
+                    Message::ToColorScreen => Model{screen: Screen::Color, ..m},
+                    Message::ToDotScreen => Model{screen: Screen::Dot, ..m},
                     Message::CircleDecrease => Model{radius_circle: (m.radius_circle -5).min(1), ..m},
                     Message::CircleInlarge => Model{radius_circle: (m.radius_circle + 5).max(60), ..m},
                     Message::CircleDown => Model{position_circle_y: (m.position_circle_y + 3).max(300), ..m},
@@ -307,8 +323,9 @@ fn main(hw: board::Hardware) -> ! {
                     Message::CircleLeft => Model{position_circle_x : (m.position_circle_x - 3).min(250), ..m}, //maybe type of position_circle_x has to be changed as above
                     Message::CircleRight => Model{position_circle_x : (m.position_circle_x + 3).max(510), ..m},
                     Message::CircleRectangle => Model{dot_is_rec: !m.dot_is_rec, ..m},
-                    Message::ToMenu => Model{screen: Screen::Menu, ..m},
-                    Message::ToWidgets => Model{screen: Screen::Widgets, ..m},
+                    Message::ColorRed(x) => Model{color: Color::rgb(x as u8, m.color.green, m.color.blue), ..m},
+                    Message::ColorGreen(x) => Model{color: Color::rgb(m.color.red, x as u8, m.color.blue), ..m},
+                    Message::ColorBlue(x) => Model{color: Color::rgb(m.color.red, m.color.green, x as u8), ..m},
                     // Message::Increment => Model{counter: m.counter+1, ..m},
                     // Message::Decrement => Model{c2: m.c2+1, ..m},
                     // Message::OnChange(x) => Model{slider_value: x, ..m},
@@ -367,8 +384,18 @@ fn main(hw: board::Hardware) -> ! {
                 if new_msg.is_some(){
                     let msg = new_msg.unwrap();
 
+                    let prev_screen = model.screen;
                     model = update(model, msg);
                     let new_widgets = view(&model);
+
+                    // clear all if screen change
+                    if prev_screen != model.screen {
+                        for w in widgets{
+                            w.clear(&mut layer_1, &mut layer_2);
+                        }
+                        widgets = vec![];
+                    }
+
                     draw(&new_widgets, &widgets, &mut layer_1, &mut layer_2);
                     widgets = new_widgets;
                 }

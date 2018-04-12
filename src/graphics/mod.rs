@@ -21,9 +21,14 @@ pub enum Message{
     CircleRectangle,
     Increment,
     Decrement,
-    ToMenu,
-    ToWidgets,
+    ToMenuScreen,
+    ToWidgetsScreen,
+    ToDotScreen,
+    ToColorScreen,
     OnChange(i32),
+    ColorRed(i32),
+    ColorGreen(i32),
+    ColorBlue(i32),
 }
 
 pub enum TouchEvent{
@@ -32,6 +37,7 @@ pub enum TouchEvent{
     Released,
 }
 
+#[derive(PartialEq, Clone, Copy)]
 pub enum Screen{
     Menu,
     Dot,
