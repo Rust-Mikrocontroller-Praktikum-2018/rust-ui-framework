@@ -27,12 +27,12 @@ impl Keyboard {
         let button_size = 40;
         let spacer = 7;
         let mut button_left;
-        let mut button_top = 0;
+        let mut button_top = 271;
 
         let mut vector = vec![];
 
         for line in vec![line_zxc, line_asdf, line_qwerty,] {
-            button_top += button_size + spacer;
+            button_top -= button_size + spacer;
             button_left = (480 - line.len() * (button_size + spacer) + spacer) / 2;
             for c in line {
                 vector.push(Button::new(button_left, button_top, button_size, button_size, c.to_string(), color, Some(Message::KeyboardButtonMessage(c))));
