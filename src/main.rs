@@ -263,22 +263,25 @@ fn main(hw: board::Hardware) -> ! {
                         ]
                     }
                     Screen::Dot => {
+                        let button_heigt = 30;
+                        let border = 20;
+                        let button_width = 50;
                         let moved_element :Box<UIComponent> = if !m.dot_is_rec {
                             ui::circle(m.position_circle_x, m.position_circle_y, m.radius_circle, m.color, true)
                         } else {
                             ui::rectangle(m.position_circle_x - m.radius_circle as usize, m.position_circle_y - m.radius_circle as usize, (m.radius_circle * 2) as usize, (m.radius_circle * 2) as usize, m.color, true)
                         };
                         let change_button = if !m.dot_is_rec {
-                            ui::button(35, 200, 70, 30, "circle to rectangle".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRectangle))
+                            ui::button(border, border * 5 + button_heigt * 4, border * 2 + button_width * 3, button_heigt, "circle to rectangle".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRectangle))
                         } else {
-                            ui::button(35, 200, 70, 30, "rectangle to circle".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRectangle))
+                            ui::button(border, border * 5 + button_heigt * 4, border * 2 + button_width * 3, button_heigt, "rectangle to circle".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRectangle))
                         };
-                        vec![ui::button(20, 60, 20, 20, "left".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleLeft)),
-                             ui::button(60, 20, 20, 20, "up".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleUp)),
-                             ui::button(100, 60, 20, 20, "right".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRight)),
-                             ui::button(60, 100, 20, 20, "down".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleDown)),
-                             ui::button(20, 140, 50, 20, "-".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleDecrease)),
-                             ui::button(70, 140, 50, 20, "+".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleInlarge)),
+                        vec![ui::button(border, border *2 + button_heigt, button_width, button_heigt, "left".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleLeft)),
+                             ui::button(border *2 + button_width, border, button_width, button_heigt, "up".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleUp)),
+                             ui::button(border * 3 + button_width * 2, border * 2 + button_heigt, button_width, button_heigt, "right".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRight)),
+                             ui::button(border *2 + button_width, border *3 + button_heigt * 2, button_width, button_heigt, "down".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleDown)),
+                             ui::button(border, border * 4 + button_heigt * 3, (border * 2 + button_width * 3)/2 -10, button_heigt, "     -".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleDecrease)),
+                             ui::button(border + (border * 2 + button_width * 3)/2 + 10, border * 4 + button_heigt * 3, (border * 2 + button_width * 3)/2 -10, button_heigt, "     +".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleInlarge)),
                              menu_button,
                              moved_element,
                              change_button,
