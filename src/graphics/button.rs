@@ -19,7 +19,7 @@ pub struct Button {
 impl Button {
     pub fn new(left: usize, top: usize, width: usize, height: usize, text: String, color: Color, on_click_message: Option<Message>) -> Button {
         Button{
-            rectangle: Rectangle::new(left, top, width, height, color),
+            rectangle: Rectangle::new(left, top, width, height, color, true),
             text,
             on_click_message,
             last_evt_pos: Point{x: 0, y:0},

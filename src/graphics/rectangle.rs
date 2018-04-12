@@ -10,14 +10,16 @@ pub struct Rectangle {
     pub upper_left: Point,
     pub lower_right: Point,
     pub color: Color,
+    pub filled: bool,
 }
 
 impl Rectangle {
-    pub fn new(left: usize, top: usize, width: usize, height: usize, color: Color) -> Rectangle {
+    pub fn new(left: usize, top: usize, width: usize, height: usize, color: Color, filled: bool) -> Rectangle {
         Rectangle {
             upper_left: Point { x: left, y: top },
             lower_right: Point { x: left + width, y: top + height },
             color,
+            filled
         }
     }
 
@@ -26,7 +28,7 @@ impl Rectangle {
     }
 
     fn paint_with_color(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, color: Color) {
-        draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, color, true);
+        draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, color, self.filled);
     }
 }
 
@@ -52,9 +54,9 @@ impl UIComponent for Rectangle {
 
         match old_rect {
             Some(o_w) =>
-                // if old and new don't lay over each other, clear old and draw new
+                // if old and new don't lay over each other or one of them is not filled, clear old and draw new
                 if o_w.lower_right.x <= self.upper_left.x || o_w.lower_right.y <= self.upper_left.y || o_w.upper_left.x >= self.lower_right.x ||
-                o_w.upper_left.y >= self.lower_right.y {
+                o_w.upper_left.y >= self.lower_right.y || !o_w.filled || !self.filled {
                     o_w.clear(lcd_ui, lcd_text);
                     draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, self.color, true);
                 } else {
