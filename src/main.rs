@@ -292,7 +292,7 @@ fn main(hw: board::Hardware) -> ! {
                     }
                     Screen::Keyboard => {
                         vec![
-                            ui::keyboard(Color::from_hex(0xffffff)),
+                            ui::keyboard(Color::rgb(100, 100, 100)),
                             ui::text_element(10, 10, m.keyboard_text.clone()),
                             menu_button,
                         ]
