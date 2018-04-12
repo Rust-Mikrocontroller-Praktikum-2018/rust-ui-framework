@@ -22,6 +22,7 @@ pub enum Message{
     ToWidgetsScreen,
     ToDotScreen,
     ToColorScreen,
+    ToKeyboardScreen,
     KeyboardButtonMessage(char),
     ColorRed(i32),
     ColorGreen(i32),

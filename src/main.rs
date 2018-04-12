@@ -224,6 +224,7 @@ fn main(hw: board::Hardware) -> ! {
                             ui::button(20, 20, 150, 30, "Widgets Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToWidgetsScreen)),
                             ui::button(20, 60, 150, 30, "Color Picker Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToColorScreen)),
                             ui::button(20, 100, 150, 30, "Dot Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToDotScreen)),
+                            ui::button(20, 140, 150, 30, "Keyboard Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToKeyboardScreen)),
                         ]
                     }
                     Screen::Widgets => {
@@ -303,6 +304,7 @@ fn main(hw: board::Hardware) -> ! {
                     Message::ToWidgetsScreen => Model{screen: Screen::Widgets, ..m},
                     Message::ToColorScreen => Model{screen: Screen::Color, ..m},
                     Message::ToDotScreen => Model{screen: Screen::Dot, ..m},
+                    Message::ToKeyboardScreen => Model{screen: Screen::Keyboard, ..m},
                     Message::CircleDecrease => Model{radius_circle: (m.radius_circle -5).max(1), ..m},
                     Message::CircleInlarge => Model{radius_circle: (m.radius_circle + 5).min(60), ..m},
                     Message::CircleDown => Model{position_circle_y: (m.position_circle_y + 3).min(300), ..m},
