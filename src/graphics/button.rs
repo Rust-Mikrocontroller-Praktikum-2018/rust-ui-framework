@@ -57,7 +57,16 @@ impl UIComponent for Button {
 
     fn clear(&self, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>) {
         self.rectangle.clear(lcd_ui, lcd_text);
-        self.text_element.clear(lcd_ui, lcd_text);
+
+        // this is a (hacky) shortcut. Instead of writing text in transparent color (which is a
+        // computation intensive task), set all pixels of self.rectangle to transparent within the
+        // text layer.
+        //self.text_element.clear(lcd_ui, lcd_text);
+        for y in self.rectangle.upper_left.y..=self.rectangle.lower_right.y{
+            for x in self.rectangle.upper_left.x..=self.rectangle.lower_right.x{
+                lcd_text.print_point_color_at(x, y, Color::rgba(0, 0, 0, 0));
+            }
+        }
     }
 
     fn draw(&self, old_widget: Option<&UIComponent>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
