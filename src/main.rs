@@ -294,6 +294,7 @@ fn main(hw: board::Hardware) -> ! {
                         vec![
                             ui::keyboard(Color::rgb(100, 100, 100)),
                             ui::text_element(30, 50, m.keyboard_text.clone()),
+                            ui::button(400, 70, 60, 30, "clear".to_string(), Color::rgb(100, 100, 100), Some(Message::KeyboardClear)),
                             menu_button,
                         ]
                     }
@@ -322,6 +323,7 @@ fn main(hw: board::Hardware) -> ! {
                         text.push(c);
                         Model{keyboard_text: text, ..m}
                     },
+                    Message::KeyboardClear => Model{keyboard_text: "".to_string(), ..m},
                 }
             }
             // -------------------------------------------------------------------------------------
