@@ -222,8 +222,8 @@ fn main(hw: board::Hardware) -> ! {
                     Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
                     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
                     w_new,
-                    Box::new(graphics::slider::Slider::new(400, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
-                    Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
+                    Box::new(graphics::slider::Slider::new((400-m.counter*10) as usize, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
+                    //Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
                     Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
                 ]
             }

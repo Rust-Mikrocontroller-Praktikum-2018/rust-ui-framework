@@ -57,7 +57,7 @@ impl<F: Fn(i32) -> Message + 'static> UIComponent for Slider<F> {
             x: self.left + self.width,
             y: self.top + self.height,
         };
-        rectangle::draw_rectangle(lcd_ui, &Point{x: self.left, y: self.top}, &lower_right, self.bg_color, true);
+        rectangle::draw_rectangle(lcd_ui, &Point{x: self.left, y: self.top}, &lower_right, Color::rgba(0, 0, 0, 0), true);
     }
 
     fn is_in_bounding_box(&self, p: &Point) -> bool {
