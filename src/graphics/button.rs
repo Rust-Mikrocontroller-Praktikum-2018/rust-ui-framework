@@ -5,14 +5,14 @@ use stm32f7::lcd::Layer;
 use graphics::{Message, TouchEvent};
 use stm32f7::lcd::Color;
 use graphics::rectangle::Rectangle;
-use graphics::text_element::Text_Element;
+use graphics::text_element::TextElement;
 use alloc::String;
 
 use core::any::Any;
 
 pub struct Button {
     rectangle: Rectangle,
-    text_element: Text_Element,
+    text_element: TextElement,
     on_click_message: Option<Message>,
     last_evt_pos: Point,
 }
@@ -22,7 +22,7 @@ impl Button {
         let text_pos_y = (top + top + height)/2 - 7;
         Button{
             rectangle: Rectangle::new(left, top, width, height, color, true),
-            text_element: Text_Element::new(left + 5, text_pos_y, text ),
+            text_element: TextElement::new(left + 5, text_pos_y, text ),
             on_click_message,
             last_evt_pos: Point{x: 0, y:0},
         }

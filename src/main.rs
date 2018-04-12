@@ -207,6 +207,7 @@ fn main(hw: board::Hardware) -> ! {
                 position_circle_y: usize,
                 radius_circle: i32,
                 color: Color,
+                dot_is_rec: bool,
                 /* counter: i32,
                 c2: i32,
                 show_text: bool,
@@ -215,7 +216,7 @@ fn main(hw: board::Hardware) -> ! {
 
             // enum Message
 
-            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100)};
+            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100), dot_is_rec: false};
 
             // let _slider_message = |x| Message::OnChange(x);
 
@@ -258,6 +259,28 @@ fn main(hw: board::Hardware) -> ! {
                              ui::slider(430, 100, 30, 150, 0, 100, 75, Color::from_hex(0x333333), Color::from_hex(0xffffff), |x| Message::OnChange(x)),
                         ]
                     }
+                    Screen::Dot => {
+                        let moved_element :Box<UIComponent> = if !m.dot_is_rec {
+                            ui::circle(m.position_circle_x, m.position_circle_y, m.radius_circle, m.color, true)
+                        } else {
+                            ui::rectangle(m.position_circle_x - m.radius_circle as usize, m.position_circle_y - m.radius_circle as usize, (m.radius_circle * 2) as usize, (m.radius_circle * 2) as usize, m.color, true)
+                        };
+                        let change_button = if !m.dot_is_rec {
+                            ui::button(35, 200, 70, 30, "circle to rectangle".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRectangle))
+                        } else {
+                            ui::button(35, 200, 70, 30, "rectangle to circle".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRectangle))
+                        };
+                        vec![ui::button(20, 60, 20, 20, "left".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleLeft)),
+                             ui::button(60, 20, 20, 20, "up".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleUp)),
+                             ui::button(100, 60, 20, 20, "right".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleRight)),
+                             ui::button(60, 100, 20, 20, "down".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleDown)),
+                             ui::button(20, 140, 50, 20, "-".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleDecrease)),
+                             ui::button(70, 140, 50, 20, "+".to_string(), Color::rgb(100, 100, 100), Some(Message::CircleInlarge)),
+                             menu_button,
+                             moved_element,
+                             change_button,
+                        ]
+                    }
                     _ => vec![]
                 }
                 // let w_new : Box<UIComponent> = if m.show_text{
@@ -283,6 +306,7 @@ fn main(hw: board::Hardware) -> ! {
                     Message::CircleUp => Model{position_circle_y: (m.position_circle_y - 3).min(50), ..m}, //if circle should also be allowed to have midpoint above screen, type of position_circle_y has to be changed
                     Message::CircleLeft => Model{position_circle_x : (m.position_circle_x - 3).min(250), ..m}, //maybe type of position_circle_x has to be changed as above
                     Message::CircleRight => Model{position_circle_x : (m.position_circle_x + 3).max(510), ..m},
+                    Message::CircleRectangle => Model{dot_is_rec: !m.dot_is_rec, ..m},
                     Message::ToMenu => Model{screen: Screen::Menu, ..m},
                     Message::ToWidgets => Model{screen: Screen::Widgets, ..m},
                     // Message::Increment => Model{counter: m.counter+1, ..m},

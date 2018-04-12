@@ -18,6 +18,7 @@ pub enum Message{
     CircleDown,
     CircleInlarge,
     CircleDecrease,
+    CircleRectangle,
     Increment,
     Decrement,
     ToMenu,

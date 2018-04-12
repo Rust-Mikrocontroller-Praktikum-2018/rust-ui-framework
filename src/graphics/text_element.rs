@@ -7,19 +7,19 @@ use graphics::{Message, TouchEvent};
 use alloc::String;
 use core::any::Any;
 
-pub struct Text_Element {
+pub struct TextElement {
     text: String,
     x_pos: usize,
     y_pos: usize,
 }
 
-impl Text_Element{
-    pub fn new(x_pos: usize, y_pos: usize, text: String) -> Text_Element {
-        Text_Element{ text, x_pos, y_pos,}
+impl TextElement{
+    pub fn new(x_pos: usize, y_pos: usize, text: String) -> TextElement {
+        TextElement{ text, x_pos, y_pos,}
     }
 }
 
-impl UIComponent for Text_Element {
+impl UIComponent for TextElement {
     fn as_any(&self) -> &Any {
         self
     }
@@ -32,7 +32,7 @@ impl UIComponent for Text_Element {
 
     fn draw(&self, old_widget: Option<&UIComponent>, _lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
         let old_text = match old_widget {
-            Some(ow) => ow.as_any().downcast_ref::<Text_Element>(),
+            Some(ow) => ow.as_any().downcast_ref::<TextElement>(),
             None => None,
         };
         
