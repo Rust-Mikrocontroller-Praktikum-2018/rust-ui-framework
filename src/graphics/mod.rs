@@ -13,8 +13,10 @@ mod slider;
 pub enum Message{
     Increment,
     Decrement,
-    ToMenu,
-    ToWidgets,
+    ToMenuScreen,
+    ToWidgetsScreen,
+    ToDotScreen,
+    ToColorScreen,
     OnChange(i32),
 }
 
@@ -24,6 +26,7 @@ pub enum TouchEvent{
     Released,
 }
 
+#[derive(PartialEq, Clone, Copy)]
 pub enum Screen{
     Menu,
     Dot,
