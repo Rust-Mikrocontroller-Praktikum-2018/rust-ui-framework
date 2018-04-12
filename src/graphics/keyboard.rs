@@ -6,20 +6,16 @@ use graphics::TouchEvent;
 use lcd::{Color, Layer, FramebufferArgb8888, FramebufferAl88};
 use core::any::Any;
 use alloc::Vec;
-use alloc::{String, string::ToString};
+use alloc::string::ToString;
 
 pub struct Keyboard {
     buttons: Vec<Button>,
-    text: String,
-    // color: Color,
 }
 
 impl Keyboard {
-    pub fn new(initial_text: String, color: Color) -> Keyboard {
+    pub fn new(color: Color) -> Keyboard {
         Keyboard {
             buttons: Keyboard::get_keyboard_button_vector(color),
-            text: initial_text,
-            // color: color,
         }
     }
 
@@ -31,12 +27,12 @@ impl Keyboard {
         let button_size = 40;
         let spacer = 7;
         let mut button_left;
-        let mut button_top = 0;
+        let mut button_top = 271;
 
         let mut vector = vec![];
 
         for line in vec![line_zxc, line_asdf, line_qwerty,] {
-            button_top += button_size + spacer;
+            button_top -= button_size + spacer;
             button_left = (480 - line.len() * (button_size + spacer) + spacer) / 2;
             for c in line {
                 vector.push(Button::new(button_left, button_top, button_size, button_size, c.to_string(), color, Some(Message::KeyboardButtonMessage(c))));
@@ -123,7 +119,15 @@ impl UIComponent for Keyboard {
                     self.buttons[button_index].on_touch(evt)
                 }
             },
-            TouchEvent::Released => None, // put point in released-event
+            TouchEvent::Released(p) => {
+                let pos = self.get_button_index(&p);
+                if pos == -1 {
+                    None
+                } else {
+                    let button_index = self.get_button_index(&p) as usize;
+                    self.buttons[button_index].on_touch(evt)
+                }
+            },
         }
     }
 

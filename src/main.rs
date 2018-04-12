@@ -211,7 +211,7 @@ fn main(hw: board::Hardware) -> ! {
                 let touch_event = match (prev_touch, curr_touch) {
                     (None, Some(p)) => Some(TouchEvent::Pressed(p)),
                     (Some(_), Some(p)) => Some(TouchEvent::Moved(p)),
-                    (Some(_), None) => Some(TouchEvent::Released),
+                    (Some(p), None) => Some(TouchEvent::Released(p)),
                     (None, None) => None,
                 };
                 prev_touch = curr_touch;
@@ -253,7 +253,7 @@ fn main(hw: board::Hardware) -> ! {
 
                 // reset active widget if touch event is "Released"
                 match touch_event {
-                    Some(TouchEvent::Released) => active_widget = None,
+                    Some(TouchEvent::Released(_p)) => active_widget = None,
                     _ => (),
                 }
             }
