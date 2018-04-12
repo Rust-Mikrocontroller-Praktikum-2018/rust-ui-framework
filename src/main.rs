@@ -150,6 +150,7 @@ fn main(hw: board::Hardware) -> ! {
     layer_1.clear();
     layer_2.clear();
     layer_1b.clear();
+    lcd.set_background_color(lcd::Color::from_hex(0x000000));
     //lcd::init_stdout(layer_2);
 
     // i2c
@@ -214,8 +215,47 @@ fn main(hw: board::Hardware) -> ! {
 
             let _slider_message = |x| Message::OnChange(x);
 
+            use graphics::ui;
+
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
-                vec![]
+                let menu_button = ui::button(430, 20, 30, 30, " X".to_string(), Color::rgb(100, 100, 100), Some(Message::ToMenu));
+
+                match m.screen {
+                    Screen::Menu => {
+                        vec![
+                            ui::button(20, 50, 150, 30, "Widgets Demo".to_string(), Color::rgb(100, 100, 100), Some(Message::ToWidgets)),
+                        ]
+                    }
+                    Screen::Widgets => {
+                        let ll = ui::point(300, 250);
+                        let lr = ui::point(350, 250);
+                        let ul = ui::point(300, 200);
+                        let ur = ui::point(350, 200);
+                        let top = ui::point(325, 170);
+                        let house_points = vec![ll, ul, top, ur, lr, ul, ur, ll, lr];
+                        let star = vec![ui::point(325, 40),
+                                        ui::point(335, 80),
+                                        ui::point(375, 90),
+                                        ui::point(335, 100),
+                                        ui::point(325, 140),
+                                        ui::point(315, 100),
+                                        ui::point(275, 90),
+                                        ui::point(315, 80),
+                                        ];
+                        vec![ui::button(20, 50, 100, 30, "Button 1".to_string(), Color::rgb(100, 100, 100), None),
+                             ui::button(20, 100, 100, 30, "Button 2".to_string(), Color::rgb(0, 150, 0), None),
+                             ui::circle(70, 200, 50, Color::rgb(50, 50, 255), true),
+                             ui::circle(200, 80, 30, Color::rgb(255, 0, 0), false),
+                             ui::rectangle(170, 150, 30, 30, Color::rgb(255, 255, 0), false),
+                             ui::rectangle(170, 200, 30, 30, Color::rgb(255, 255, 0), true),
+                             ui::polygon(star, Color::from_hex(0xff00ff), true),
+                             ui::polygon(house_points, Color::from_hex(0x00ffff), false),
+                             menu_button,
+                             ui::slider(430, 100, 30, 150, 0, 100, 75, Color::from_hex(0x333333), Color::from_hex(0xffffff), |x| Message::OnChange(x)),
+                        ]
+                    }
+                    _ => vec![]
+                }
                 // let w_new : Box<UIComponent> = if m.show_text{
                 //     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
                 // }else{
@@ -233,6 +273,8 @@ fn main(hw: board::Hardware) -> ! {
 
             fn update(m: Model, msg: Message) -> Model{
                 match msg {
+                    Message::ToMenu => Model{screen: Screen::Menu, ..m},
+                    Message::ToWidgets => Model{screen: Screen::Widgets, ..m},
                     // Message::Increment => Model{counter: m.counter+1, ..m},
                     // Message::Decrement => Model{c2: m.c2+1, ..m},
                     // Message::OnChange(x) => Model{slider_value: x, ..m},
@@ -319,6 +361,10 @@ fn find_widget(p: &graphics::point::Point, widgets: &Vec<Box<UIComponent>>) -> O
 
 use stm32f7::lcd::Layer;
 fn draw(widgets: &Vec<Box<UIComponent>>, old_widgets: &Vec<Box<UIComponent>>, lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
+    for idx in widgets.len()..old_widgets.len(){
+        old_widgets[idx].clear(lcd_ui, lcd_text);
+    }
+
     for (idx, w) in widgets.iter().enumerate(){
         let old_widget = if idx < old_widgets.len() {
             Some(old_widgets[idx].as_ref())
