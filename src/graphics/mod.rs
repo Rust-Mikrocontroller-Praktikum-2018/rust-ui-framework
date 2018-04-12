@@ -19,3 +19,10 @@ pub enum TouchEvent{
     Moved(point::Point),
     Released,
 }
+
+pub enum Screen{
+    Menu,
+    Dot,
+    Color,
+    Keyboard,
+}

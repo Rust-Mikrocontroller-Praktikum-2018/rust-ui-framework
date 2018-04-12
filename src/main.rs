@@ -22,7 +22,8 @@ extern crate smoltcp;
 use stm32f7::{audio, board, embedded, lcd, sdram, system_clock, touch, i2c};
 use graphics::ui_component::UIComponent;
 
-use graphics::{Message, TouchEvent};
+use graphics::point::Point;
+use graphics::{Message, TouchEvent, Screen};
 use alloc::Vec;
 use alloc::boxed::Box;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
@@ -200,39 +201,42 @@ fn main(hw: board::Hardware) -> ! {
             // ---  User code ----------------------------------------------------------------------
             // -------------------------------------------------------------------------------------
             struct Model {
-                counter: i32,
+                screen: Screen,
+                /* counter: i32,
                 c2: i32,
                 show_text: bool,
-                slider_value: i32,
+                slider_value: i32, */
             };
 
             // enum Message
 
-            let mut model = Model{counter: 0, c2: 0, show_text: true, slider_value: 50,};
+            let mut model = Model{screen: Screen::Menu};
 
             let _slider_message = |x| Message::OnChange(x);
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
-                let w_new : Box<UIComponent> = if m.show_text{
-                    Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
-                }else{
-                    Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000), true))
-                };
-                vec![
-                    Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
-                    Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
-                    w_new,
-                    Box::new(graphics::slider::Slider::new(400, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
-                    Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
-                    Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
-                ]
+                vec![]
+                // let w_new : Box<UIComponent> = if m.show_text{
+                //     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
+                // }else{
+                //     Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000), true))
+                // };
+                // vec![
+                //     Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
+                //     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
+                //     w_new,
+                //     Box::new(graphics::slider::Slider::new(400, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
+                //     Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
+                //     Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
+                // ]
             }
 
             fn update(m: Model, msg: Message) -> Model{
                 match msg {
-                    Message::Increment => Model{counter: m.counter+1, ..m},
-                    Message::Decrement => Model{c2: m.c2+1, ..m},
-                    Message::OnChange(x) => Model{slider_value: x, ..m},
+                    // Message::Increment => Model{counter: m.counter+1, ..m},
+                    // Message::Decrement => Model{c2: m.c2+1, ..m},
+                    // Message::OnChange(x) => Model{slider_value: x, ..m},
+                    _ => m
                 }
             }
             // -------------------------------------------------------------------------------------
@@ -244,7 +248,6 @@ fn main(hw: board::Hardware) -> ! {
 
             // enum TouchEvent
 
-            use graphics::point::Point;
             let mut active_widget: Option<usize> = None;
             let mut widgets: Vec<Box<UIComponent>> = view(&model);
 
