@@ -208,17 +208,9 @@ fn main(hw: board::Hardware) -> ! {
                 radius_circle: i32,
                 color: Color,
                 dot_is_rec: bool,
-                /* counter: i32,
-                c2: i32,
-                show_text: bool,
-                slider_value: i32, */
             };
 
-            // enum Message
-
             let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100), dot_is_rec: false};
-
-            // let _slider_message = |x| Message::OnChange(x);
 
             use graphics::ui;
 
@@ -258,7 +250,7 @@ fn main(hw: board::Hardware) -> ! {
                              ui::polygon(star, Color::from_hex(0xff00ff), true),
                              ui::polygon(house_points, Color::from_hex(0x00ffff), false),
                              menu_button,
-                             ui::slider(430, 100, 30, 150, 0, 100, 75, Color::from_hex(0x333333), Color::from_hex(0xffffff), |x| Message::OnChange(x)),
+                             ui::slider(430, 100, 30, 150, 0, 100, 75, Color::from_hex(0x333333), Color::from_hex(0xffffff), |x| Message::ColorRed(x)),
                         ]
                     }
                     Screen::Dot => {
@@ -298,19 +290,6 @@ fn main(hw: board::Hardware) -> ! {
                     }
                     _ => vec![menu_button]
                 }
-                // let w_new : Box<UIComponent> = if m.show_text{
-                //     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
-                // }else{
-                //     Box::new(graphics::rectangle::Rectangle::new(130, 10, 50, 50, Color::from_hex(0xff0000), true))
-                // };
-                // vec![
-                //     Box::new(graphics::button::Button::new(10, 50, 100, 30, "Inc".to_string(), Color::rgb(0, 0, 0), Some(Message::Increment))),
-                //     Box::new(graphics::button::Button::new(10, 100, 100, 30, "Dec".to_string(), Color::rgb(0, 0, 0), Some(Message::Decrement))),
-                //     w_new,
-                //     Box::new(graphics::slider::Slider::new(400, 30, 20, 150, 0, 1000, m.slider_value, Color::rgb(100, 100, 100), Color::rgb(255, 80, 80), |x|{Message::OnChange(x)})),
-                //     Box::new(graphics::button::Button::new(450, 30, 20, 20, m.slider_value.to_string(), Color::rgb(200, 0, 0), None)),
-                //     Box::new(graphics::polygon::Polygon::new(vec![Point{x: 200, y: (m.c2*10+20) as usize}, Point{x: 150, y: 120}, Point{x: 170, y: 200}], Color::from_hex(0xffff00), true)),
-                // ]
             }
 
             fn update(m: Model, msg: Message) -> Model{
@@ -329,10 +308,6 @@ fn main(hw: board::Hardware) -> ! {
                     Message::ColorRed(x) => Model{color: Color::rgb(x as u8, m.color.green, m.color.blue), ..m},
                     Message::ColorGreen(x) => Model{color: Color::rgb(m.color.red, x as u8, m.color.blue), ..m},
                     Message::ColorBlue(x) => Model{color: Color::rgb(m.color.red, m.color.green, x as u8), ..m},
-                    // Message::Increment => Model{counter: m.counter+1, ..m},
-                    // Message::Decrement => Model{c2: m.c2+1, ..m},
-                    // Message::OnChange(x) => Model{slider_value: x, ..m},
-                    _ => m
                 }
             }
             // -------------------------------------------------------------------------------------
@@ -341,8 +316,6 @@ fn main(hw: board::Hardware) -> ! {
             // -------------------------------------------------------------------------------------
             // ---  Framework code -----------------------------------------------------------------
             // -------------------------------------------------------------------------------------
-
-            // enum TouchEvent
 
             let mut active_widget: Option<usize> = None;
             let mut widgets: Vec<Box<UIComponent>> = view(&model);

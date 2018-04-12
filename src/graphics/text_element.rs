@@ -54,7 +54,7 @@ impl UIComponent for TextElement {
 
     fn is_in_bounding_box(&self, _p: &Point) -> bool{ false }
 
-    fn on_touch(&mut self, evt: &TouchEvent) -> Option<Message> {None}
+    fn on_touch(&mut self, _evt: &TouchEvent) -> Option<Message> {None}
 
     fn paint(&self, _lcd_ui: &mut Layer<FramebufferArgb8888>, lcd_text: &mut Layer<FramebufferAl88>){
         lcd_text
