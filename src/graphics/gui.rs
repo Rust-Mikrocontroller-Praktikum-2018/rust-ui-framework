@@ -131,7 +131,7 @@ pub fn view(m: &Model) -> Vec<Box<UIComponent>> {
         }
         Screen::Keyboard => {
             vec![
-                ui::keyboard(Color::rgb(100, 100, 100)),
+                ui::keyboard(Color::rgb(100, 100, 100), |x| Message::KeyboardButtonMessage(x)),
                 ui::text_element(30, 50, m.keyboard_text.clone()),
                 ui::button(400, 70, 60, 30, "clear".to_string(), Color::rgb(100, 100, 100), Some(Message::KeyboardClear)),
                 menu_button,
