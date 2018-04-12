@@ -202,6 +202,10 @@ fn main(hw: board::Hardware) -> ! {
             // -------------------------------------------------------------------------------------
             struct Model {
                 screen: Screen,
+                position_circle_x: usize,
+                position_circle_y: usize,
+                radius_circle: i32,
+                color: Color,
                 /* counter: i32,
                 c2: i32,
                 show_text: bool,
@@ -210,9 +214,9 @@ fn main(hw: board::Hardware) -> ! {
 
             // enum Message
 
-            let mut model = Model{screen: Screen::Menu};
+            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100)};
 
-            let _slider_message = |x| Message::OnChange(x);
+            // let _slider_message = |x| Message::OnChange(x);
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
                 vec![]
@@ -233,6 +237,12 @@ fn main(hw: board::Hardware) -> ! {
 
             fn update(m: Model, msg: Message) -> Model{
                 match msg {
+                    Message::CircleDecrease => Model{radius_circle: (m.radius_circle -5).min(1), ..m},
+                    Message::CircleInlarge => Model{radius_circle: (m.radius_circle + 5).max(60), ..m},
+                    Message::CircleDown => Model{position_circle_y: (m.position_circle_y + 3).max(300), ..m},
+                    Message::CircleUp => Model{position_circle_y: (m.position_circle_y - 3).min(50), ..m}, //if circle should also be allowed to have midpoint above screen, type of position_circle_y has to be changed
+                    Message::CircleLeft => Model{position_circle_x : (m.position_circle_x - 3).min(250), ..m}, //maybe type of position_circle_x has to be changed as above
+                    Message::CircleRight => Model{position_circle_x : (m.position_circle_x + 3).max(510), ..m},
                     // Message::Increment => Model{counter: m.counter+1, ..m},
                     // Message::Decrement => Model{c2: m.c2+1, ..m},
                     // Message::OnChange(x) => Model{slider_value: x, ..m},

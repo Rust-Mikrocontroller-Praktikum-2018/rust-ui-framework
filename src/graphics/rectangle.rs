@@ -58,7 +58,7 @@ impl UIComponent for Rectangle {
                 if o_w.lower_right.x <= self.upper_left.x || o_w.lower_right.y <= self.upper_left.y || o_w.upper_left.x >= self.lower_right.x ||
                 o_w.upper_left.y >= self.lower_right.y || !o_w.filled || !self.filled {
                     o_w.clear(lcd_ui, lcd_text);
-                    draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, self.color, true);
+                    draw_rectangle(lcd_ui, &self.upper_left, &self.lower_right, self.color, self.filled);
                 } else {
 
                 //if colors of o_w and self are equal, start comparing positions

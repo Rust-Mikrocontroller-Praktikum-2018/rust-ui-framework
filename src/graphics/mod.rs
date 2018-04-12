@@ -6,9 +6,16 @@ pub mod circle;
 pub mod button;
 pub mod ui_component;
 pub mod slider;
+pub mod text_element;
 
 #[derive(Clone, Copy)]
 pub enum Message{
+    CircleLeft,
+    CircleRight,
+    CircleUp,
+    CircleDown,
+    CircleInlarge,
+    CircleDecrease,
     Increment,
     Decrement,
     OnChange(i32),
