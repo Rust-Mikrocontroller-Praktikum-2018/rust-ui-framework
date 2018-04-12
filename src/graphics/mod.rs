@@ -1,3 +1,5 @@
+use alloc::String;
+
 pub mod line;
 pub mod point;
 pub mod polygon;
@@ -6,12 +8,14 @@ pub mod circle;
 pub mod button;
 pub mod ui_component;
 pub mod slider;
+pub mod keyboard;
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub enum Message{
     Increment,
     Decrement,
     OnChange(i32),
+    KeyboardButtonMessage(char),
 }
 
 pub enum TouchEvent{

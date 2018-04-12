@@ -29,7 +29,7 @@ use alloc::boxed::Box;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
 use stm32f7::lcd::Color;
 mod graphics;
-use alloc::string::ToString;
+use alloc::{String, string::ToString};
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -202,6 +202,7 @@ fn main(hw: board::Hardware) -> ! {
             // -------------------------------------------------------------------------------------
             struct Model {
                 screen: Screen,
+                keyboard_text: String,
                 /* counter: i32,
                 c2: i32,
                 show_text: bool,
@@ -210,12 +211,14 @@ fn main(hw: board::Hardware) -> ! {
 
             // enum Message
 
-            let mut model = Model{screen: Screen::Menu};
+            let mut model = Model{screen: Screen::Menu, keyboard_text: "".to_string()};
 
             let _slider_message = |x| Message::OnChange(x);
 
             fn view(m: &Model) -> Vec<Box<UIComponent>> {
-                vec![]
+                vec![
+                    Box::new(graphics::keyboard::Keyboard::new(m.keyboard_text.clone(), Color::rgb(255, 255, 255))),
+                ]
                 // let w_new : Box<UIComponent> = if m.show_text{
                 //     Box::new(graphics::button::Button::new(150+10*m.counter as usize, 75+10*m.c2 as usize, 100, 30, m.counter.to_string(), Color::rgb((m.counter*20) as u8, (m.counter*20) as u8, (m.counter*20) as u8), None))
                 // }else{
@@ -236,6 +239,11 @@ fn main(hw: board::Hardware) -> ! {
                     // Message::Increment => Model{counter: m.counter+1, ..m},
                     // Message::Decrement => Model{c2: m.c2+1, ..m},
                     // Message::OnChange(x) => Model{slider_value: x, ..m},
+                    Message::KeyboardButtonMessage(c) => {
+                        let mut text = m.keyboard_text.clone();
+                        text.push(c);
+                        Model{keyboard_text: text, ..m}
+                    },
                     _ => m
                 }
             }
