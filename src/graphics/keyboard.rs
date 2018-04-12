@@ -6,20 +6,16 @@ use graphics::TouchEvent;
 use lcd::{Color, Layer, FramebufferArgb8888, FramebufferAl88};
 use core::any::Any;
 use alloc::Vec;
-use alloc::{String, string::ToString};
+use alloc::string::ToString;
 
 pub struct Keyboard {
     buttons: Vec<Button>,
-    text: String,
-    // color: Color,
 }
 
 impl Keyboard {
-    pub fn new(initial_text: String, color: Color) -> Keyboard {
+    pub fn new(color: Color) -> Keyboard {
         Keyboard {
             buttons: Keyboard::get_keyboard_button_vector(color),
-            text: initial_text,
-            // color: color,
         }
     }
 
