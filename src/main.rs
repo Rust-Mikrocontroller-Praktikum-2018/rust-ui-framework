@@ -29,7 +29,7 @@ use alloc::boxed::Box;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
 use stm32f7::lcd::Color;
 mod graphics;
-use alloc::string::ToString;
+use alloc::{String, string::ToString};
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() -> ! {
@@ -203,6 +203,7 @@ fn main(hw: board::Hardware) -> ! {
             // -------------------------------------------------------------------------------------
             struct Model {
                 screen: Screen,
+                keyboard_text: String,
                 position_circle_x: usize,
                 position_circle_y: usize,
                 radius_circle: i32,
@@ -216,7 +217,7 @@ fn main(hw: board::Hardware) -> ! {
 
             // enum Message
 
-            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100), dot_is_rec: false};
+            let mut model = Model{screen: Screen::Menu, position_circle_x: 360, position_circle_y: 135, radius_circle: 30, color: Color::rgb(255, 0, 100), dot_is_rec: false, keyboard_text: "".to_string(),};
 
             // let _slider_message = |x| Message::OnChange(x);
 
@@ -296,6 +297,11 @@ fn main(hw: board::Hardware) -> ! {
                             menu_button,
                         ]
                     }
+                    Screen::Keyboard => {
+                        vec![
+                            ui::keyboard(m.keyboard_text.clone(), Color::from_hex(0xffffff)),
+                        ]
+                    }
                     _ => vec![menu_button]
                 }
                 // let w_new : Box<UIComponent> = if m.show_text{
@@ -332,6 +338,11 @@ fn main(hw: board::Hardware) -> ! {
                     // Message::Increment => Model{counter: m.counter+1, ..m},
                     // Message::Decrement => Model{c2: m.c2+1, ..m},
                     // Message::OnChange(x) => Model{slider_value: x, ..m},
+                    Message::KeyboardButtonMessage(c) => {
+                        let mut text = m.keyboard_text.clone();
+                        text.push(c);
+                        Model{keyboard_text: text, ..m}
+                    },
                     _ => m
                 }
             }

@@ -1,7 +1,6 @@
-
 pub mod point;
 pub mod ui_component;
-
+mod keyboard;
 mod text_element;
 mod line;
 mod polygon;
@@ -10,7 +9,7 @@ mod circle;
 mod button;
 mod slider;
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub enum Message{
     CircleLeft,
     CircleRight,
@@ -26,6 +25,7 @@ pub enum Message{
     ToDotScreen,
     ToColorScreen,
     OnChange(i32),
+    KeyboardButtonMessage(char),
     ColorRed(i32),
     ColorGreen(i32),
     ColorBlue(i32),
@@ -53,6 +53,7 @@ pub mod ui{
     use graphics::slider::Slider;
     use graphics::circle::Circle;
     use graphics::polygon::Polygon;
+    use graphics::keyboard::Keyboard;
     use graphics::point::Point;
     use graphics::text_element::TextElement;
     use stm32f7::lcd::Color;
@@ -76,6 +77,10 @@ pub mod ui{
 
     pub fn slider<F: Fn(i32) -> Message>(left: usize, top: usize, width: usize, height: usize, min_value: i32, max_value: i32, initial_value: i32, bg_color: Color, fg_color: Color, on_drag_message: F) -> Box<Slider<F>> {
         Box::new(Slider::new(left, top, width, height, min_value, max_value, initial_value, bg_color,fg_color, on_drag_message))
+    }
+
+    pub fn keyboard(initial_text: String, color: Color) -> Box<Keyboard> {
+        Box::new(Keyboard::new(initial_text, color))
     }
 
     pub fn point(x: usize, y: usize) -> Point {
