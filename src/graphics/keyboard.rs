@@ -13,13 +13,13 @@ pub struct Keyboard {
 }
 
 impl Keyboard {
-    pub fn new(color: Color) -> Keyboard {
+    pub fn new<F: Fn(char) -> Message>(color: Color, on_char_typed: F) -> Keyboard {
         Keyboard {
-            buttons: Keyboard::get_keyboard_button_vector(color),
+            buttons: Keyboard::get_keyboard_button_vector(color, on_char_typed),
         }
     }
 
-    fn get_keyboard_button_vector(color: Color) -> Vec<Button> {
+    fn get_keyboard_button_vector<F: Fn(char) -> Message>(color: Color, on_char_typed: F) -> Vec<Button> {
         let line_qwerty = vec!['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',];
         let line_asdf = vec!['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',];
         let line_zxc = vec!['z', 'x', 'c', 'v', 'b', 'n', 'm',];
@@ -35,7 +35,7 @@ impl Keyboard {
             button_top -= button_size + spacer;
             button_left = (480 - line.len() * (button_size + spacer) + spacer) / 2;
             for c in line {
-                vector.push(Button::new(button_left, button_top, button_size, button_size, c.to_string(), color, Some(Message::KeyboardButtonMessage(c))));
+                vector.push(Button::new(button_left, button_top, button_size, button_size, c.to_string(), color, Some(on_char_typed(c))));
                 button_left += button_size + spacer;
             }
         }

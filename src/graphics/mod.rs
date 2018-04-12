@@ -49,8 +49,8 @@ pub mod ui{
         Box::new(Slider::new(left, top, width, height, min_value, max_value, initial_value, bg_color,fg_color, on_drag_message))
     }
 
-    pub fn keyboard(color: Color) -> Box<Keyboard> {
-        Box::new(Keyboard::new(color))
+    pub fn keyboard<F: Fn(char) -> Message>(color: Color, on_char_typed: F) -> Box<Keyboard> {
+        Box::new(Keyboard::new(color, on_char_typed))
     }
 
     pub fn point(x: usize, y: usize) -> Point {
