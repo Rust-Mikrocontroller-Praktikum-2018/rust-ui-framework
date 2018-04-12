@@ -1,7 +1,7 @@
 use stm32f7::lcd::{Color, Framebuffer, FramebufferAl88, FramebufferArgb8888, Layer};
 use graphics::point::Point;
 use graphics::ui_component::UIComponent;
-use graphics::{Message, TouchEvent};
+use graphics::{gui::Message, TouchEvent};
 use core::any::Any;
 
 pub struct Circle {

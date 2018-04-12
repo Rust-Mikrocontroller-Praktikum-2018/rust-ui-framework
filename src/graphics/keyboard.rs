@@ -1,7 +1,7 @@
 use graphics::button::Button;
 use graphics::ui_component::UIComponent;
 use graphics::point::Point;
-use graphics::Message;
+use graphics::gui::Message;
 use graphics::TouchEvent;
 use lcd::{Color, Layer, FramebufferArgb8888, FramebufferAl88};
 use core::any::Any;

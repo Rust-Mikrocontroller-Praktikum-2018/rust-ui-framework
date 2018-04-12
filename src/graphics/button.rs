@@ -2,7 +2,7 @@ use graphics::point::Point;
 use graphics::ui_component::UIComponent;
 use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
 use stm32f7::lcd::Layer;
-use graphics::{Message, TouchEvent};
+use graphics::{gui::Message, TouchEvent};
 use stm32f7::lcd::Color;
 use graphics::rectangle::Rectangle;
 use graphics::text_element::TextElement;

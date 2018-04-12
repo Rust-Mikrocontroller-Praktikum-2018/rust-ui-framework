@@ -1,6 +1,6 @@
 use lcd::{Layer, FramebufferArgb8888, FramebufferAl88, Color};
 use graphics::{point::Point, rectangle};
-use graphics::{ui_component::UIComponent, TouchEvent, Message};
+use graphics::{ui_component::UIComponent, TouchEvent, gui::Message};
 use core::any::Any;
 
 pub struct Slider<F: Fn(i32) -> Message> {

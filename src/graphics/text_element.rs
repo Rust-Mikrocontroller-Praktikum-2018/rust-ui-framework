@@ -2,7 +2,7 @@ use stm32f7::lcd::{FramebufferAl88, FramebufferArgb8888};
 use stm32f7::lcd::Layer;
 use graphics::ui_component::UIComponent;
 use graphics::point::Point;
-use graphics::{Message, TouchEvent};
+use graphics::{gui::Message, TouchEvent};
 
 use alloc::String;
 use core::any::Any;

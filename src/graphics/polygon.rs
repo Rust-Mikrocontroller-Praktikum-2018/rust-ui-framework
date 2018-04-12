@@ -1,5 +1,5 @@
 use stm32f7::lcd::{Layer, Framebuffer, Color, FramebufferArgb8888, FramebufferAl88};
-use graphics::{line, point::Point, TouchEvent, Message};
+use graphics::{line, point::Point, TouchEvent, gui::Message};
 use graphics::ui_component::UIComponent;
 
 use core::any::Any;

@@ -8,40 +8,12 @@ mod rectangle;
 mod circle;
 mod button;
 mod slider;
-
-#[derive(Clone)]
-pub enum Message{
-    CircleLeft,
-    CircleRight,
-    CircleUp,
-    CircleDown,
-    CircleInlarge,
-    CircleDecrease,
-    CircleRectangle,
-    ToMenuScreen,
-    ToWidgetsScreen,
-    ToDotScreen,
-    ToColorScreen,
-    ToKeyboardScreen,
-    KeyboardButtonMessage(char),
-    ColorRed(i32),
-    ColorGreen(i32),
-    ColorBlue(i32),
-}
+pub mod gui;
 
 pub enum TouchEvent{
     Pressed(point::Point),
     Moved(point::Point),
     Released,
-}
-
-#[derive(PartialEq, Clone, Copy)]
-pub enum Screen{
-    Menu,
-    Dot,
-    Color,
-    Keyboard,
-    Widgets,
 }
 
 pub mod ui{
@@ -55,7 +27,7 @@ pub mod ui{
     use graphics::point::Point;
     use graphics::text_element::TextElement;
     use stm32f7::lcd::Color;
-    use graphics::Message;
+    use graphics::gui::Message;
 
     pub fn button(left: usize, top: usize, width: usize, height: usize, text: String, color: Color, on_click_message: Option<Message>) -> Box<Button>{
         Box::new(Button::new(left, top, width, height, text, color, on_click_message))
