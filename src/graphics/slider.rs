@@ -119,7 +119,7 @@ impl<F: Fn(i32) -> Message + 'static> UIComponent for Slider<F> {
                 let new_value = new_value.max(self.min_value).min(self.max_value);
                 Some((self.message)(new_value))
             },
-            TouchEvent::Released => {
+            TouchEvent::Released(_p) => {
                 // values stored, nothing to do
                 None
             },

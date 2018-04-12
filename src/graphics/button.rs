@@ -111,7 +111,7 @@ impl UIComponent for Button {
                 self.last_evt_pos = p;
                 None
             },
-            &TouchEvent::Released =>
+            &TouchEvent::Released(_p) =>
                 if self.is_in_bounding_box(&self.last_evt_pos) {
                     self.on_click_message.clone()
                 }else{

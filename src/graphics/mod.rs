@@ -32,7 +32,7 @@ pub enum Message{
 pub enum TouchEvent{
     Pressed(point::Point),
     Moved(point::Point),
-    Released,
+    Released(point::Point),
 }
 
 #[derive(PartialEq, Clone, Copy)]

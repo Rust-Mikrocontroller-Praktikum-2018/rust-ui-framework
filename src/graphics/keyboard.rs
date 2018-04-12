@@ -119,7 +119,15 @@ impl UIComponent for Keyboard {
                     self.buttons[button_index].on_touch(evt)
                 }
             },
-            TouchEvent::Released => None, // put point in released-event
+            TouchEvent::Released(p) => {
+                let pos = self.get_button_index(&p);
+                if pos == -1 {
+                    None
+                } else {
+                    let button_index = self.get_button_index(&p) as usize;
+                    self.buttons[button_index].on_touch(evt)
+                }
+            },
         }
     }
 
