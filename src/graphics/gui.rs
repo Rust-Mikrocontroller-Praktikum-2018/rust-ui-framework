@@ -3,18 +3,13 @@ use alloc::{Vec, String, boxed::Box, string::ToString};
 use stm32f7::lcd::Color;
 
 pub struct Model {
-    pub screen: Screen,
+    pub screen: usize,
 }
 
 pub fn generate_model() -> Model {
     Model{
-        screen: Screen::Main,
+        screen: 0,
     }
-}
-
-#[derive(PartialEq, Clone, Copy)]
-pub enum Screen{
-    Main,
 }
 
 #[derive(Clone)]
